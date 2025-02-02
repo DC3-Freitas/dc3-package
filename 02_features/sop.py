@@ -60,7 +60,7 @@ def sop_single_atom(N_b_list, l_list, neighbors):
 def calculate_all_sop(N_b_list, l_list, data):
     """
     Calculates the Steindhart Order Parameters part of the
-    feature vector for each atom. The feature vector consists 
+    feature vector for each atom. The feature vector portion consists 
     of a collection of Q^{N_b}_l over all N_b in N_b_list and l's in l_list.
 
     Args:
