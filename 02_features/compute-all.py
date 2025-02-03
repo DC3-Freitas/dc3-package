@@ -7,6 +7,7 @@ L_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 R_MULTS = [0.85, 0.90, 0.95, 1.00, 1.05, 1.10, 1.15]
 SIGMA_MULT = 0.05
 
+
 def compute_feature_vectors(data, save_path):
     """
     Computes feature vectors given data, normalizes so that
@@ -31,4 +32,3 @@ def compute_feature_vectors(data, save_path):
 
     # 3) Save
     np.savetxt(save_path, feature_vector)
-
