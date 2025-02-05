@@ -4,7 +4,7 @@ Visualize a synthetic dataset.
 
 import numpy as np
 import matplotlib.pyplot as plt
-import ovito
+#import ovito
 
 
 def plot_lattice(lattice: np.ndarray):

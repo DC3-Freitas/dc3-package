@@ -3,16 +3,23 @@ import ovito
 
 
 class LatticeGenerator:
-    def load_np(lattice: np.ndarray):
+    def load_np(self, lattice: np.ndarray):
         """
         Initialize a generator with a given lattice; use OVITO for analysis
         - lattice: expects a numpy array (n x 3) of perfect lattice positions
         """
-        self.lattice = ovito.DataCollection()
-        self.lattice.particles_.create_property("Position", data=lattice)
+        self.lattice = ovito.data.DataCollection()
+        particles = ovito.data.Particles()
+        particles.create_property("Position", data=lattice)
+        self.lattice.objects.append(particles)
+        cell = ovito.data.SimulationCell(pbc = (False, False, False))
+        cell[...] = [[10,0,0,0],
+                    [0,10,0,0],
+                    [0,0,10,0]]
+        self.lattice.objects.append(cell)
         self.calculate_nn_distance()
 
-    def load_ovito(lattice: ovito.data.DataCollection):
+    def load_ovito(self, lattice: ovito.data.DataCollection):
         """
         Initialize a generator with a given lattice; use OVITO for analysis
         - lattice: expects a DataCollection object of perfect lattice positions
@@ -20,7 +27,7 @@ class LatticeGenerator:
         self.lattice = lattice
         self.calculate_nn_distance()
 
-    def load_lammps(filename: str):
+    def load_lammps(self, filename: str):
         """
         Initialize a generator with a given lattice; use OVITO for analysis
         - filename: expects a string of the path to a LAMMPS data file
@@ -38,6 +45,7 @@ class LatticeGenerator:
         self.nn_distance = next(
             ovito.data.NearestNeighborFinder(1, self.lattice).find(0)
         ).distance
+        print(f"Nearest neighbor distance: {self.nn_distance}")
 
     def generate(self, alpha):
         """
