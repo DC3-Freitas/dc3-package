@@ -10,7 +10,13 @@ lattice = cubic_lattice(1, 5)
 # Perturb
 generator = LatticeGenerator()
 generator.load_np(lattice)
-displaced_lattice = generator.generate(0.05).particles['Position']
+displaced_lattices = []
+for alpha in np.linspace(0, 0.25, 5):
+    displaced_lattices.append([
+        generator.generate(alpha).particles['Position'],
+        f"alpha = {alpha:.2f}"
+    ])
 
 # Visualize
-vis.plot_lattice(displaced_lattice)
+# vis.plot_lattice(displaced_lattice)
+vis.plot_lattices(displaced_lattices)
