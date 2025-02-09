@@ -34,9 +34,3 @@ def plot_lattices(lattices: list[np.ndarray]):
         ax.scatter(lattice[:, 0], lattice[:, 1], lattice[:, 2])
         ax.set_title(title)
     plt.show()
-
-def plot_tsne():
-    """
-    Plot a t-SNE visualization of the synthetic dataset.
-    """
-    pass
