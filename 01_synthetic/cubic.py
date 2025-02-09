@@ -2,15 +2,16 @@
 
 import numpy as np
 
+
 # Create a simple cubic lattice
 def cubic_lattice(a: float, n: int):
     """
     Generate a simple cubic lattice with lattice constant a and n atoms per side
-    
+
     Args:
         a: lattice constant
         n: number of atoms per side
-    
+
     Returns:
         lattice: a numpy array of shape (n^3, 3) containing the positions of the atoms
     """

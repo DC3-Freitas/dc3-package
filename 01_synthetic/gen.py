@@ -6,7 +6,7 @@ class LatticeGenerator:
     def load_np(self, lattice: np.ndarray):
         """
         Initialize a generator with a given lattice; use OVITO for analysis
-        
+
         Args:
             lattice: a numpy array (n x 3) of perfect lattice positions
         """
@@ -14,17 +14,15 @@ class LatticeGenerator:
         particles = ovito.data.Particles()
         particles.create_property("Position", data=lattice)
         self.lattice.objects.append(particles)
-        cell = ovito.data.SimulationCell(pbc = (False, False, False))
-        cell[...] = [[10,0,0,0],
-                    [0,10,0,0],
-                    [0,0,10,0]]
+        cell = ovito.data.SimulationCell(pbc=(False, False, False))
+        cell[...] = [[10, 0, 0, 0], [0, 10, 0, 0], [0, 0, 10, 0]]
         self.lattice.objects.append(cell)
         self.calculate_nn_distance()
 
     def load_ovito(self, lattice: ovito.data.DataCollection):
         """
         Initialize a generator with a given lattice; use OVITO for analysis
-        
+
         Args:
             lattice: an OVITO DataCollection object of perfect lattice positions
         """
@@ -34,7 +32,7 @@ class LatticeGenerator:
     def load_lammps(self, filename: str):
         """
         Initialize a generator with a given lattice; use OVITO for analysis
-        
+
         Args:
             filename: a string of the path to a LAMMPS data file
         """
@@ -56,10 +54,10 @@ class LatticeGenerator:
     def generate(self, alpha):
         """
         Generate a synthetic sample of initialized lattice with a given thermal alpha.
-        
+
         Args:
             alpha: percentage of nearest neighbor distance to displace atoms
-        
+
         Returns:
             displaced_lattice: an OVITO DataCollection object of the displaced lattice
         """
@@ -94,7 +92,7 @@ class LatticeGenerator:
             alpha_min: minimum thermal alpha
             alpha_max: maximum thermal alpha
             n: number of samples to generate (linear interpolation between alpha_min and alpha_max)
-        
+
         Returns:
             list of OVITO DataCollection objects of the displaced lattices
         """
