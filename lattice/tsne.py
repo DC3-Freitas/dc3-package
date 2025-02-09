@@ -2,7 +2,7 @@
 Compute t-SNE on synthetic dataset.
 """
 
-from gen import LatticeGenerator
+from lattice.gen import LatticeGenerator
 import numpy as np
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
@@ -58,9 +58,9 @@ if __name__ == "__main__":
     bcc_gen = LatticeGenerator()
     fcc_gen = LatticeGenerator()
 
-    sc_gen.load_lammps("lammps_lattices/data/sc.gz")
-    bcc_gen.load_lammps("lammps_lattices/data/bcc.gz")
-    fcc_gen.load_lammps("lammps_lattices/data/fcc.gz")
+    sc_gen.load_lammps("lattice/lammps_lattices/data/sc.gz")
+    bcc_gen.load_lammps("lattice/lammps_lattices/data/bcc.gz")
+    fcc_gen.load_lammps("lattice/lammps_lattices/data/fcc.gz")
 
     print("perfect lattices loaded!")
 

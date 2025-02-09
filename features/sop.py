@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.special import sph_harm_y
 from ovito.data import NearestNeighborFinder
-
+from tqdm import tqdm
 
 def sop_formula(l, thetas, phis):
     """
@@ -83,7 +83,7 @@ def calculate_all_sop(N_b_list, l_list, data):
     finder = NearestNeighborFinder(max(N_b_list), data)
 
     # 2) Iterate over each atom and compute sop vector for it
-    for atom in range(num_atoms):
+    for atom in tqdm(range(num_atoms)):
         feature_vec.append(sop_single_atom(N_b_list, l_list, finder.find(atom)))
 
     return np.array(feature_vec)

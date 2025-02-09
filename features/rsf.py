@@ -1,6 +1,6 @@
 import numpy as np
 from ovito.data import NearestNeighborFinder, CutoffNeighborFinder
-
+from tqdm import tqdm
 
 def calculate_all_rsf(N_b_list, r_mults, sigma_mult, data):
     """
@@ -28,7 +28,7 @@ def calculate_all_rsf(N_b_list, r_mults, sigma_mult, data):
         finder = NearestNeighborFinder(N_b, data)
         r_avg = []
 
-        for atom in range(num_atoms):
+        for atom in tqdm(range(num_atoms)):
             tot_dist = 0
             num_consider = 0
 
