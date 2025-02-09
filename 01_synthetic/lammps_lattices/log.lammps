@@ -10,7 +10,7 @@ OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98
   units            metal
 
   # Create atoms.
-  lattice          fcc 1.0
+  lattice          sc 1.0
 Lattice spacing in x,y,z = 1 1 1
   region           sim_box block 0 ${n} 0 ${n} 0 ${n}
   region           sim_box block 0 8 0 ${n} 0 ${n}
@@ -20,7 +20,7 @@ Lattice spacing in x,y,z = 1 1 1
 Created orthogonal box = (0 0 0) to (8 8 8)
   1 by 1 by 1 MPI processor grid
   create_atoms     1 box
-Created 2048 atoms
+Created 512 atoms
   using lattice units in orthogonal box = (0 0 0) to (8 8 8)
   create_atoms CPU = 0.000 seconds
 
@@ -30,7 +30,7 @@ Created 2048 atoms
 
 
 #----------------------------- Run simulation ---------------------------------#
-  write_dump       all custom data/fcc.gz id type x y z
+  write_dump       all custom data/sc.gz id type x y z
 WARNING: Calling write_dump before a full system init. (src/write_dump.cpp:88)
 #------------------------------------------------------------------------------#
 Total wall time: 0:00:00
