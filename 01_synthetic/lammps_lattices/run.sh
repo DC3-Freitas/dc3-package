@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=LMP_TEST_2
+#SBATCH --job-name=LATTICE_GEN
 #SBATCH --ntasks 16
 #SBATCH --nodes 1
 #SBATCH --time 1:00:00
@@ -10,7 +10,7 @@
 source ~/.bashrc
 conda activate lammps_env
 
-for i in "bcc" "fcc"
+for i in "bcc" "fcc" "sc"
 do
     lmp -in ${i}.lmp
 done
