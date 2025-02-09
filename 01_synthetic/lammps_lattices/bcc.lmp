@@ -18,5 +18,5 @@
 
 
 #----------------------------- Run simulation ---------------------------------#
-  write_dump       all custom data/dump_bcc.gz id type x y z
+  write_dump       all custom data/bcc.gz id type x y z
 #------------------------------------------------------------------------------#

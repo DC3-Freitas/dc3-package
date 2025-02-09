@@ -18,5 +18,5 @@
 
 
 #----------------------------- Run simulation ---------------------------------#
-  write_dump       all custom data/dump_fcc.gz id type x y z
+  write_dump       all custom data/fcc.gz id type x y z
 #------------------------------------------------------------------------------#
