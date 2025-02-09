@@ -1,0 +1,26 @@
+[node2404:167408] shmem: mmap: an error occurred while determining whether or not /tmp/ompi.node2404.258800/jf.0/1727922176/shared_mem_cuda_pool.node2404 could be created.
+[node2404:167408] create_and_attach: unable to create shared memory BTL coordinating structure :: size 134217728 
+LAMMPS (29 Aug 2024)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+Lattice spacing in x,y,z = 1 1 1
+Created orthogonal box = (0 0 0) to (10 10 10)
+  1 by 1 by 1 MPI processor grid
+Created 2000 atoms
+  using lattice units in orthogonal box = (0 0 0) to (10 10 10)
+  create_atoms CPU = 0.000 seconds
+WARNING: Calling write_dump before a full system init. (src/write_dump.cpp:88)
+Total wall time: 0:00:00
+[node2404:167414] shmem: mmap: an error occurred while determining whether or not /tmp/ompi.node2404.258800/jf.0/1858011136/shared_mem_cuda_pool.node2404 could be created.
+[node2404:167414] create_and_attach: unable to create shared memory BTL coordinating structure :: size 134217728 
+LAMMPS (29 Aug 2024)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+Lattice spacing in x,y,z = 1 1 1
+Created orthogonal box = (0 0 0) to (8 8 8)
+  1 by 1 by 1 MPI processor grid
+Created 2048 atoms
+  using lattice units in orthogonal box = (0 0 0) to (8 8 8)
+  create_atoms CPU = 0.000 seconds
+WARNING: Calling write_dump before a full system init. (src/write_dump.cpp:88)
+Total wall time: 0:00:00
