@@ -9,6 +9,6 @@
 
 source ~/.bashrc
 conda activate lammps_env
-cd ~/DC3-Reproduction
+cd ~/proj/DC3-Reproduction
 
 python -m ml_dataset.data_gen_single fcc lattice/lammps_lattices/data/fcc.gz $1
