@@ -6,7 +6,9 @@ class LatticeGenerator:
     def load_np(self, lattice: np.ndarray):
         """
         Initialize a generator with a given lattice; use OVITO for analysis
-        - lattice: expects a numpy array (n x 3) of perfect lattice positions
+        
+        Args:
+            lattice: a numpy array (n x 3) of perfect lattice positions
         """
         self.lattice = ovito.data.DataCollection()
         particles = ovito.data.Particles()
@@ -22,7 +24,9 @@ class LatticeGenerator:
     def load_ovito(self, lattice: ovito.data.DataCollection):
         """
         Initialize a generator with a given lattice; use OVITO for analysis
-        - lattice: expects a DataCollection object of perfect lattice positions
+        
+        Args:
+            lattice: an OVITO DataCollection object of perfect lattice positions
         """
         self.lattice = lattice
         self.calculate_nn_distance()
@@ -30,7 +34,9 @@ class LatticeGenerator:
     def load_lammps(self, filename: str):
         """
         Initialize a generator with a given lattice; use OVITO for analysis
-        - filename: expects a string of the path to a LAMMPS data file
+        
+        Args:
+            filename: a string of the path to a LAMMPS data file
         """
         pipeline = ovito.io.import_file(filename)
         self.lattice = pipeline.compute()
@@ -50,7 +56,12 @@ class LatticeGenerator:
     def generate(self, alpha):
         """
         Generate a synthetic sample of initialized lattice with a given thermal alpha.
-        - alpha: percentage of nearest neighbor distance to displace atoms
+        
+        Args:
+            alpha: percentage of nearest neighbor distance to displace atoms
+        
+        Returns:
+            displaced_lattice: an OVITO DataCollection object of the displaced lattice
         """
         displaced_lattice = self.lattice.clone()
         displacement_radius = alpha * self.nn_distance
@@ -78,6 +89,14 @@ class LatticeGenerator:
         """
         Generate a range of synthetic samples of initialized lattice with thermal alphas
         ranging from alpha_min to alpha_max.
+
+        Args:
+            alpha_min: minimum thermal alpha
+            alpha_max: maximum thermal alpha
+            n: number of samples to generate (linear interpolation between alpha_min and alpha_max)
+        
+        Returns:
+            list of OVITO DataCollection objects of the displaced lattices
         """
         alphas = np.linspace(alpha_min, alpha_max, n)
         return [self.generate(alpha) for alpha in alphas]

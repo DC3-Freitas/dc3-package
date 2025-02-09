@@ -7,6 +7,9 @@ Replication study of "Data-centric framework for crystal structure identificatio
 - [ ] Outlier detection model
 - [ ] ML model for crystal structure identification
 
+## Requirements
+`ovito`, `numpy`, `matplotlib`
+
 ## Contributors
 Ethan Cardenas   
 Jieruei Chang   

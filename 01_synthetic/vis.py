@@ -1,16 +1,16 @@
 """
-Visualize a synthetic dataset.
+Visualize samples from the synthetic dataset.
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
-#import ovito
-
 
 def plot_lattice(lattice: np.ndarray):
     """
     Plot a lattice in 3D.
-    - lattice: expects a numpy array (n x 3) of lattice positions
+    
+    Args:
+        lattice: a numpy array (n x 3) of lattice positions
     """
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
@@ -20,7 +20,9 @@ def plot_lattice(lattice: np.ndarray):
 def plot_lattices(lattices: list[np.ndarray]):
     """
     Plot multiple lattices in 3D.
-    - lattices: expects a list of numpy arrays (n x 3) of lattice positions
+    
+    Args:
+        lattices: a list of numpy arrays (n x 3) of lattice positions
     """
     fig = plt.figure()
     # style

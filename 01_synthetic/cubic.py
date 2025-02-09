@@ -1,4 +1,4 @@
-# Generate a perfect cubic lattice
+# Test script to generate a perfect cubic lattice
 
 import numpy as np
 
@@ -6,8 +6,13 @@ import numpy as np
 def cubic_lattice(a: float, n: int):
     """
     Generate a simple cubic lattice with lattice constant a and n atoms per side
-    - a: lattice constant
-    - n: number of atoms per side
+    
+    Args:
+        a: lattice constant
+        n: number of atoms per side
+    
+    Returns:
+        lattice: a numpy array of shape (n^3, 3) containing the positions of the atoms
     """
     lattice = np.array(
         [
