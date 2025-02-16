@@ -3,8 +3,8 @@ import torch.nn as nn
 
 class MLP_Model(nn.Module):
     def __init__(self):
-        super(Model, self).__init__()
-        self.network = nn.sequential(
+        super(MLP_Model, self).__init__()
+        self.network = nn.Sequential(
             nn.Linear(330, 100),
             nn.ReLU(),
             nn.Linear(100, 100),
@@ -18,4 +18,4 @@ class MLP_Model(nn.Module):
         )
     
     def forward(self, x):
-        return self.fc(x)
+        return self.network(x)
