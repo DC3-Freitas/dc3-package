@@ -1,4 +1,4 @@
-# DC3-Reproduction
+# DC<sup>3</sup>-Reproduction
 Replication study of "Data-centric framework for crystal structure identification in atomistic simulations using machine learning" by Chung et al. (2022)
 
 ## Tasks
