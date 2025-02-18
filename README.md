@@ -6,6 +6,7 @@ Replication study of "Data-centric framework for crystal structure identificatio
 - [x] Feature vector generation
     - [ ] Research into faster parameterizations
 - [x] ML dataset generation / t-SNE analysis
+    - [ ] Comparison to MD simulations
 - [ ] Outlier detection model
 - [x] ML model for crystal structure identification
     - [ ] ML training on complex datasets

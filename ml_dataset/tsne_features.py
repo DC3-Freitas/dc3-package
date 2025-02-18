@@ -28,10 +28,10 @@ def tsne(data, labels, label_map):
 
     # Plot
     plt.style.use("bmh")
-    scatter = plt.scatter(data_2d[:, 0], data_2d[:, 1], c=labels)
+    scatter = plt.scatter(data_2d[:, 0], data_2d[:, 1], c=labels, s=5)
     scatter_handles, scatter_labels = scatter.legend_elements()
     plt.legend(handles=scatter_handles, labels=label_map.keys())
+    plt.savefig("ml_dataset/tsne.png", dpi=1200)
     plt.show()
-    plt.savefig("tsne.png")
 
 tsne(data, labels, label_map)

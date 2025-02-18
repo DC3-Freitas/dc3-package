@@ -10,6 +10,7 @@ from tqdm import tqdm
 
 class CrystalDataset(Dataset):
     def __init__(self, folder):
+        print(f"Loading CrystalDataset from {folder}")
         self.data = []
         self.labels = []
         self.label_map = {}
