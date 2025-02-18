@@ -4,9 +4,14 @@ Replication study of "Data-centric framework for crystal structure identificatio
 ## Tasks
 - [x] Synthetic crystal structure generation
 - [x] Feature vector generation
-- [ ] ML dataset generation
+    - [ ] Research into faster parameterizations
+- [x] ML dataset generation / t-SNE analysis
 - [ ] Outlier detection model
-- [ ] ML model for crystal structure identification
+- [x] ML model for crystal structure identification
+    - [ ] ML training on complex datasets
+- [ ] MD simulation and model testing
+    - [ ] LAMMPS molecular simulations and visualizations
+    - [ ] Model testing performance over different thermal distributions
 
 ## Components
 - `lattice`: Generate synthetic crystal structures with thermal noise, loading from OVITO/numpy
