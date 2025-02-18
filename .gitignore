@@ -4,3 +4,5 @@ __pycache__/
 *.out # SLURM job output
 *.pt
 *.pth
+ml_dataset/data_v2/*.gz
+ml_dataset/data_old/*.gz
