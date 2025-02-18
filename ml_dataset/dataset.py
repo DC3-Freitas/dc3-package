@@ -26,6 +26,10 @@ class CrystalDataset(Dataset):
                 self.data.append(data)
                 self.labels += [self.label_map[label] for _ in range(data.shape[0])]
         self.data = np.vstack(self.data)
+        # normalize data
+        means = np.mean(self.data, axis=0)
+        stds = np.std(self.data, axis=0)
+        self.data = (self.data - means) / stds
         self.labels = np.array(self.labels)
         print(f"Loaded dataset with {len(self.label_map)} classes and {len(self.data)} samples")
     

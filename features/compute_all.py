@@ -26,9 +26,9 @@ def compute_feature_vectors(data, save_path):
     feature_vector = np.hstack((sop_features, rsf_features))
 
     # 2) Normalize feature fector
-    means = np.mean(feature_vector, axis=0)
-    stds = np.std(feature_vector, axis=0)
-    feature_vector = (feature_vector - means) / stds
+    # means = np.mean(feature_vector, axis=0)
+    # stds = np.std(feature_vector, axis=0)
+    # feature_vector = (feature_vector - means) / stds
 
     # 3) Save
     if save_path is None:

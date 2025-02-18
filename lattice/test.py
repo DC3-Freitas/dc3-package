@@ -25,7 +25,7 @@ def test_np():
 
 def test_lammps():
     generator = LatticeGenerator()
-    generator.load_lammps("lattice/lammps_lattices/data/sc.gz")
+    generator.load_lammps("lattice/lammps_lattices/data/bcc.gz")
     displaced_lattices = []
     for alpha in np.linspace(0, 0.25, 5):
         displaced_lattices.append(

@@ -29,7 +29,7 @@ model = MLP_Model()
 
 optim = torch.optim.Adam(
     model.parameters(),
-    lr=5e-3,
+    #lr=5e-3,
     betas=(0.9, 0.999),
 )
 
@@ -57,8 +57,8 @@ val_loader = DataLoader(
     sampler=val_sampler
 )
 
-# loss = nn.NLLLoss()
-loss = nn.CrossEntropyLoss()
+loss = nn.NLLLoss()
+# loss = nn.CrossEntropyLoss()
 
 # DEVICE
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

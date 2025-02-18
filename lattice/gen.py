@@ -69,8 +69,9 @@ class LatticeGenerator:
         # https://stackoverflow.com/questions/5408276/sampling-uniformly-distributed-random-points-inside-a-spherical-volume
         # we could potentially speed this up by sampling from a cube and rejecting points outside the sphere
         phi = np.random.uniform(0, 2 * np.pi, n_atoms)
-        theta = np.random.uniform(0, np.pi, n_atoms)
-        r = np.cbrt(np.random.uniform(0, displacement_radius, n_atoms))
+        # theta = np.random.uniform(0, np.pi, n_atoms)
+        theta = np.arccos(np.random.uniform(-1, 1, n_atoms))
+        r = displacement_radius * np.cbrt(np.random.uniform(0, 1, n_atoms))
 
         # apply displacements
         displaced_lattice.particles_.positions_[:] += np.array(

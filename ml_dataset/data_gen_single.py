@@ -20,16 +20,18 @@ def create(structure_name, fname, alpha):
     Returns:
         Nothing
     """
+    print(f"Running {structure_name} on alpha={alpha}")
 
     # Initialize generator
     generator = LatticeGenerator()
     generator.load_lammps(fname)
 
     # Generate synthetic data
-    data = []
-    for displaced_lattice in tqdm(generator.generate_range(alpha_min, alpha_max, num_lattices)):
-        data.append(compute_feature_vectors(displaced_lattice, None))
-    data = np.hstack(data)
+    # data = []
+    # # for displaced_lattice in tqdm(generator.generate_range(alpha_min, alpha_max, num_lattices)):
+    # #     data.append(compute_feature_vectors(displaced_lattice, None))
+    # data = np.hstack(data)
+    data = compute_feature_vectors(generator.generate(alpha), None)
     np.savetxt(f"ml_dataset/data/{structure_name}_{alpha}.gz", data)
 
 if __name__ == "__main__":
@@ -43,4 +45,4 @@ if __name__ == "__main__":
     create("sc", "lattice/lammps_lattices/data/sc.gz", 0, 0.25, 40)
     '''
 
-    create(sys.argv[1], sys.argv[2], float(0.25 * sys.argv[3] / 40))
+    create(sys.argv[1], sys.argv[2], np.linspace(0.01, 0.25, 10)[int(sys.argv[3])])
