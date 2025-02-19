@@ -9,8 +9,6 @@
 
 source ~/.bashrc
 conda activate lammps_env
+cd ~/proj/DC3-Reproduction
 
-for i in "bcc" "fcc" "sc" "hcp" "hd"
-do
-    lmp -in ${i}.lmp
-done
+python -m ml_dataset.tsne_prototype

@@ -2,7 +2,9 @@ LAMMPS (29 Aug 2024)
 OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
   using 1 OpenMP thread(s) per MPI task
 #--------------------------- Simulation variables -----------------------------#
-  variable         n equal 8 # System size.
+  variable         nx equal 9 # System size.
+  variable         ny equal 5 # System size.
+  variable         nz equal 6 # System size.
 #------------------------------------------------------------------------------#
 
 
@@ -10,18 +12,28 @@ OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98
   units            metal
 
   # Create atoms.
-  lattice          sc 1.0
-Lattice spacing in x,y,z = 1 1 1
-  region           sim_box block 0 ${n} 0 ${n} 0 ${n}
-  region           sim_box block 0 8 0 ${n} 0 ${n}
-  region           sim_box block 0 8 0 8 0 ${n}
-  region           sim_box block 0 8 0 8 0 8
+  variable         a equal 1.0
+  lattice          hcp ${a}
+  lattice          hcp 1
+Lattice spacing in x,y,z = 1 1.7320508 1.6329932
+  region           sim_box block 0 ${nx} 0 ${ny} 0 ${nz}
+  region           sim_box block 0 9 0 ${ny} 0 ${nz}
+  region           sim_box block 0 9 0 5 0 ${nz}
+  region           sim_box block 0 9 0 5 0 6
   create_box       1 sim_box
-Created orthogonal box = (0 0 0) to (8 8 8)
+Created orthogonal box = (0 0 0) to (9 8.660254 9.797959)
   1 by 1 by 1 MPI processor grid
   create_atoms     1 box
-Created 512 atoms
-  using lattice units in orthogonal box = (0 0 0) to (8 8 8)
+Created 1080 atoms
+  using lattice units in orthogonal box = (0 0 0) to (9 8.660254 9.797959)
+  create_atoms CPU = 0.000 seconds
+  lattice          hcp ${a} origin 0 0 $(3/8)
+  lattice          hcp 1 origin 0 0 $(3/8)
+  lattice          hcp 1 origin 0 0 0.375
+Lattice spacing in x,y,z = 1 1.7320508 1.6329932
+  create_atoms     1 box
+Created 1080 atoms
+  using lattice units in orthogonal box = (0 0 0) to (9 8.660254 9.797959)
   create_atoms CPU = 0.000 seconds
 
   # Interatomic potential information.
@@ -30,7 +42,7 @@ Created 512 atoms
 
 
 #----------------------------- Run simulation ---------------------------------#
-  write_dump       all custom data/sc.gz id type x y z
+  write_dump       all custom data/hd.gz id type x y z
 WARNING: Calling write_dump before a full system init. (src/write_dump.cpp:88)
 #------------------------------------------------------------------------------#
 Total wall time: 0:00:00
