@@ -10,7 +10,7 @@
 source ~/.bashrc
 conda activate lammps_env
 
-for i in "bcc" "fcc" "sc" "hcp" "hd"
+for i in "bcc" "fcc" "sc" "hcp" "hd" "cd"
 do
     lmp -in ${i}.lmp
 done
