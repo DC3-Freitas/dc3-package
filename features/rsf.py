@@ -1,6 +1,43 @@
 import numpy as np
+import numba as nb
 from ovito.data import NearestNeighborFinder, CutoffNeighborFinder
 from tqdm import tqdm
+
+
+@nb.njit
+def calc_g(dists, avg, r_mults, sigma_mult):
+    fvec = np.zeros(len(r_mults))
+
+    for i, r_mult in enumerate(r_mults):
+        r_use = avg * r_mult
+        sigma = sigma_mult * avg
+
+        g_val = np.sum(np.exp(-np.square(dists - r_use) / (2 * (sigma ** 2))))
+        fvec[i] = g_val
+    
+    return fvec
+
+
+@nb.njit
+def calc_rsf_single_atom(r_avg, r_cuts, all_dists, r_mults, sigma_mult):
+    fvec = np.zeros(len(r_avg) * len(r_mults))
+    dists = []
+    N_b_idx = 0
+
+    # Process as we iterate over neighbors
+    for dist in all_dists:
+        while N_b_idx < len(r_avg) and dist > r_cuts[N_b_idx]:
+            fvec[N_b_idx * len(r_mults) : (N_b_idx + 1) * len(r_mults)] = calc_g(np.array(dists), r_avg[N_b_idx], r_mults, sigma_mult)
+            N_b_idx += 1
+        dists.append(dist)
+
+    # Process remaining
+    while N_b_idx < len(r_avg):
+        fvec[N_b_idx * len(r_mults) : (N_b_idx + 1) * len(r_mults)] = calc_g(np.array(dists), r_avg[N_b_idx], r_mults, sigma_mult)
+        N_b_idx += 1
+    
+    return fvec
+
 
 def calculate_all_rsf(N_b_list, r_mults, sigma_mult, data):
     """
@@ -10,7 +47,7 @@ def calculate_all_rsf(N_b_list, r_mults, sigma_mult, data):
     the average distance to N_b nearest neighbors.
 
     Args:
-        N_b_list (any iterable of ints): Values of N_b.
+        N_b_list (any SORTED iterable of ints): Values of N_b.
         r_mults (any iterable of ints): Values that we scale average
         r by for each atom to use for the r and sigma values of G^{N_b}_{r,sigma}.
         data (OVITO data object): Information about all atoms.
@@ -19,39 +56,47 @@ def calculate_all_rsf(N_b_list, r_mults, sigma_mult, data):
         A numpy 2d array storing the RSF part of the feature vectors.
     """
     # 1) Initialize
+    assert N_b_list == sorted(N_b_list), "N_b_list should be sorted"
+
     num_atoms = data.particles.count
     feature_vec = [[] for _ in range(num_atoms)]
 
-    # 2) Calculate
-    for N_b in N_b_list:
-        # A) Find average distances which we will use to normalize
-        finder = NearestNeighborFinder(N_b, data)
-        r_avg = []
+    # 2) Calculate average distances for each (atom, N_b)
+    r_avgs = np.zeros((num_atoms, len(N_b_list)))
+    finder_avg = NearestNeighborFinder(max(N_b_list), data)
 
-        for atom in tqdm(range(num_atoms)):
-            tot_dist = 0
-            num_consider = 0
+    for atom in tqdm(range(num_atoms), "RSF: Preprocessing"):
+        tot_dist = 0
+        num_consider = 0
+        N_b_idx = 0
 
-            for neigh in finder.find(atom):
-                tot_dist += neigh.distance
-                num_consider += 1
+        all_dists = sorted([neigh.distance for neigh in finder_avg.find(atom)])
 
-            r_avg.append(tot_dist / num_consider)
+        for dist in all_dists:
+            tot_dist += dist
+            num_consider += 1
 
-        # B) Calculate r_cut
-        r_cut = max(r_avg) + 4 * max(r_avg) * sigma_mult
+            while N_b_idx < len(N_b_list) and num_consider == N_b_list[N_b_idx]:
+                r_avgs[atom][N_b_idx] = tot_dist / num_consider
+                N_b_idx += 1
+        
+        # If there are too few atoms
+        while N_b_idx < len(N_b_list) and num_consider == N_b_list[N_b_idx]:
+            r_avgs[atom][N_b_idx] = tot_dist / num_consider
+            N_b_idx += 1
 
-        # C) Calculate features for each atom
-        finder = CutoffNeighborFinder(r_cut, data)
+    # Take column-wise maximum to calculate r_cut for each N_b
+    max_avgs = np.max(r_avgs, axis=0)
+    r_cuts = max_avgs + 4 * max_avgs * sigma_mult
 
-        for atom in range(num_atoms):
-            dists = np.array([neigh.distance for neigh in finder.find(atom)])
+    assert np.array_equal(r_cuts, np.sort(r_cuts)), "r_cut should be sorted"
 
-            for r_mult in np.array(r_mults):
-                r_use = r_avg[atom] * r_mult
-                sigma = sigma_mult * r_avg[atom]
+    # 3) Calculate features
+    finder_cutoff = CutoffNeighborFinder(max(r_cuts), data)
 
-                g_val = np.sum(np.exp(-np.square(dists - r_use) / (2 * sigma**2)))
-                feature_vec[atom].append(g_val)
+    for atom in tqdm(range(num_atoms), "RSF: Calculating"):
+        # The neighbors here may not be in sorted order so we manually sort them
+        all_dists = sorted([neigh.distance for neigh in finder_cutoff.find(atom)])
+        feature_vec[atom] = calc_rsf_single_atom(r_avgs[atom], r_cuts, all_dists, r_mults, sigma_mult)
 
     return np.array(feature_vec)
