@@ -25,16 +25,7 @@ def compute_feature_vectors(data, save_path):
     rsf_features = calculate_all_rsf(N_B_LIST, R_MULTS, SIGMA_MULT, data)
     feature_vector = np.hstack((sop_features, rsf_features))
 
-    # 2) Normalize feature vector
-    # means = np.mean(feature_vector, axis=0)
-    # stds = np.std(feature_vector, axis=0)
-
-    # Don't divide by 0 (columns with equal numbers will be set to 0)
-    stds[stds == 0] = 1
-
-    # feature_vector = (feature_vector - means) / stds
-
-    # 3) Save
+    # 2) Save
     if save_path is None:
         return feature_vector
     np.savetxt(save_path, feature_vector)

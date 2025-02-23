@@ -3,30 +3,6 @@ from scipy.special import sph_harm_y
 from ovito.data import NearestNeighborFinder
 from tqdm import tqdm
 
-def sop_formula(l, thetas, phis):
-    """
-    Computes Q^{N_b}_{l} for a given atom whose neighbors are
-    described by thetas and phis.
-
-    Args:
-        l (int): Value describing spherical harmonics.
-        thetas (numpy array of floats): Polar angles.
-        phis (numpy array of floats): Azimuthal angles.
-    Returns:
-        The value of Q^{N_b}_{l} described by a float.
-    """
-    # 1) Iterate over each m and sum up |q^{N_b}_{l,m}|^2
-    N_b = len(thetas)
-    q_accum = 0
-
-    for m in range(-l, l + 1):
-        # In the newer version (i.e. sph_harm_y), theta is polar and phi is azimuthal
-        q = np.sum(sph_harm_y(m, l, thetas, phis)) / N_b
-        q_accum += np.linalg.norm(q) ** 2
-
-    # 2) Now that we have main summation, apply rest of terms to get Q^{N_b}_l
-    return np.sqrt((4 * np.pi) / (2 * l + 1) * q_accum)
-
 
 def sop_single_atom(N_b_list, l_list, neighbors):
     """
@@ -36,7 +12,7 @@ def sop_single_atom(N_b_list, l_list, neighbors):
     Q^{N_b}_l over all N_b in N_b_list and l's in l_list.
 
     Args:
-        N_b_list (any iterable of ints): Values of N_b.
+        N_b_list (any SORTED iterable of ints): Values of N_b.
         l_list (any iterable of ints): Values of l.
         neighbors (iterable of OVITO NearestNeighborFinder): Neighbors of given atom.
 
@@ -55,11 +31,22 @@ def sop_single_atom(N_b_list, l_list, neighbors):
     # 2) Calculate each Q^N_b_{l}
     Q = []
 
-    for N_b in N_b_list:
-        for l in l_list:
-            Q.append(sop_formula(l, thetas[:N_b], phis[:N_b]))
+    for l in l_list:
+        curAtom = 0
 
-    return np.array(Q)
+        # A tricky math thing is that we need to keep track of all different little q at once. Since we have
+        # to divide each little q by N_b (accumulating all and then dividing by N_b is not the same)
+        q_accum_all = np.zeros(2 * l + 1, dtype=np.complex128)
+
+        for N_b in N_b_list:
+            while (curAtom < N_b):
+                q_accum_all += sph_harm_y(np.arange(-l, l + 1), l, thetas[curAtom], phis[curAtom])
+                curAtom += 1
+
+            Q.append(np.sqrt((4 * np.pi) / (2 * l + 1) * (np.linalg.norm(q_accum_all / N_b) ** 2)))
+    
+    # 3) Rearrange elements so that its flattened version of shape=(N_b, l)
+    return np.array(Q).reshape((len(l_list), len(N_b_list))).T.flatten()
 
 
 def calculate_all_sop(N_b_list, l_list, data):
@@ -69,7 +56,7 @@ def calculate_all_sop(N_b_list, l_list, data):
     of a collection of Q^{N_b}_l over all N_b in N_b_list and l's in l_list.
 
     Args:
-        N_b_list (any iterable of ints): Values of N_b.
+        N_b_list (any SORTED iterable of ints): Values of N_b.
         l_list (any iterable of ints): Values of l.
         data (OVITO data object): Information about all atoms.
 
@@ -78,6 +65,8 @@ def calculate_all_sop(N_b_list, l_list, data):
         feature vectors.
     """
     # 1) Initialize variables
+    assert N_b_list == sorted(N_b_list), "N_b_list should be sorted"
+
     num_atoms = data.particles.count
     feature_vec = []
     finder = NearestNeighborFinder(max(N_b_list), data)
