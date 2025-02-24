@@ -37,7 +37,7 @@ def calc_rsf_single_atom(r_avg, r_cuts, all_dists, r_mults, sigma_mult):
 
     Args:
         r_avg (numpy array): Averages distances for each N_b in 
-                             N_b_list (N_b_list defined in calculate_all_rsf)
+                             n_b_list (n_b_list defined in calculate_all_rsf)
         r_cuts (numpy array): Value of r_cut for each N_b
         all_dists (SORTED iterable of ints): Sorted list of distances (within max r_cut) 
                                              from the given atom
@@ -71,17 +71,17 @@ def calc_rsf_single_atom(r_avg, r_cuts, all_dists, r_mults, sigma_mult):
     return fvec
 
 
-def calculate_all_rsf(N_b_list, r_mults, sigma_mult, data):
+def calculate_all_rsf(n_b_list, r_mults, sigma_mult, data):
     """
     Calculates the RSF based feature vector portion. The feature
     vector portion consists of a collection of G^{N_b}_{r,sigma} over
-    all N_b in N_b_list and r,sigma which is determined by r_mults and
+    all N_b in n_b_list and r,sigma which is determined by r_mults and
     the average distance to N_b nearest neighbors.
 
-    Make sure that the number of atoms is at least max(N_b_list).
+    Make sure that the number of atoms is at least max(n_b_list).
 
     Args:
-        N_b_list (any SORTED iterable of ints): Values of N_b.
+        n_b_list (any SORTED iterable of ints): Values of N_b.
         r_mults (any iterable of ints): Values that we scale average r by for each atom to use
                                         for the r and sigma values of G_{r,sigma}^{N_b}.
         sigma_mult (float): Divide by this in exponent and used to determine r_cut
@@ -91,14 +91,14 @@ def calculate_all_rsf(N_b_list, r_mults, sigma_mult, data):
         A numpy 2d array storing the RSF part of the feature vectors.
     """
     # 1) Initialize
-    assert N_b_list == sorted(N_b_list), "N_b_list should be sorted"
+    assert n_b_list == sorted(n_b_list), "n_b_list should be sorted"
 
     num_atoms = data.particles.count
     feature_vec = [[] for _ in range(num_atoms)]
 
     # 2) Calculate average distances for each (atom, N_b)
-    r_avgs = np.zeros((num_atoms, len(N_b_list)))
-    finder_avg = NearestNeighborFinder(max(N_b_list), data)
+    r_avgs = np.zeros((num_atoms, len(n_b_list)))
+    finder_avg = NearestNeighborFinder(max(n_b_list), data)
 
     for atom in tqdm(range(num_atoms), "RSF: Preprocessing"):
         tot_dist = 0
@@ -112,12 +112,12 @@ def calculate_all_rsf(N_b_list, r_mults, sigma_mult, data):
             tot_dist += dist
             num_consider += 1
 
-            while N_b_idx < len(N_b_list) and num_consider == N_b_list[N_b_idx]:
+            while N_b_idx < len(n_b_list) and num_consider == n_b_list[N_b_idx]:
                 r_avgs[atom][N_b_idx] = tot_dist / num_consider
                 N_b_idx += 1
 
         # If there are too few atoms
-        while N_b_idx < len(N_b_list) and num_consider == N_b_list[N_b_idx]:
+        while N_b_idx < len(n_b_list) and num_consider == n_b_list[N_b_idx]:
             r_avgs[atom][N_b_idx] = tot_dist / num_consider
             N_b_idx += 1
 
