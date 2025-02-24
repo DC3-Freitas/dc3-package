@@ -105,11 +105,8 @@ def calculate_all_rsf(n_b_list, r_mults, sigma_mult, data):
         num_consider = 0
         n_b_idx = 0
 
-        # Just in case they are not sorted
-        all_dists = sorted([neigh.distance for neigh in finder_avg.find(atom)])
-
-        for dist in all_dists:
-            tot_dist += dist
+        for neigh in finder_avg.find(atom):
+            tot_dist += neigh.distance
             num_consider += 1
 
             while n_b_idx < len(n_b_list) and num_consider == n_b_list[n_b_idx]:
