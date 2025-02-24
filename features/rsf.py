@@ -50,23 +50,23 @@ def calc_rsf_single_atom(r_avg, r_cuts, all_dists, r_mults, sigma_mult):
     """
     fvec = np.zeros(len(r_avg) * len(r_mults))
     dists = []
-    N_b_idx = 0
+    n_b_idx = 0
 
     # Process as we iterate over neighbors
     for dist in all_dists:
-        while N_b_idx < len(r_avg) and dist > r_cuts[N_b_idx]:
-            fvec[N_b_idx * len(r_mults) : (N_b_idx + 1) * len(r_mults)] = calc_group_g(
-                np.array(dists), r_avg[N_b_idx], r_mults, sigma_mult
+        while n_b_idx < len(r_avg) and dist > r_cuts[n_b_idx]:
+            fvec[n_b_idx * len(r_mults) : (n_b_idx + 1) * len(r_mults)] = calc_group_g(
+                np.array(dists), r_avg[n_b_idx], r_mults, sigma_mult
             )
-            N_b_idx += 1
+            n_b_idx += 1
         dists.append(dist)
 
     # Process remaining
-    while N_b_idx < len(r_avg):
-        fvec[N_b_idx * len(r_mults) : (N_b_idx + 1) * len(r_mults)] = calc_group_g(
-            np.array(dists), r_avg[N_b_idx], r_mults, sigma_mult
+    while n_b_idx < len(r_avg):
+        fvec[n_b_idx * len(r_mults) : (n_b_idx + 1) * len(r_mults)] = calc_group_g(
+            np.array(dists), r_avg[n_b_idx], r_mults, sigma_mult
         )
-        N_b_idx += 1
+        n_b_idx += 1
 
     return fvec
 
