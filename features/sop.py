@@ -35,29 +35,30 @@ def double_fact(i):
 
 
 @nb.njit
-def calc_spherical_harmonics(l, theta, phi):
+def calc_spherical_harmonics(l, thetas, phis):
     """
-    Calculates spherical harmonics for m=-l...l given l,
-    theta, and phi.
+    Calculates spherical harmonics for each atom described
+    by thetas and phis for m=-l...+l
 
     Args:
         l (float): Subscript of Y
-        theta (float): Polar angle
-        phi (float): Azimuthal angle
+        thetas (numpy array of floats): Polar angles
+        phis (numpy array of floats): Azimuthal angles
     Returns:
-        Numpy array of length 2l+1 storing spherical harmonics
-        for m=-l...l in that order.
+        2d numpy array sph_y where sph_y[i] stores the
+        spherical harmonic values for atom i for m=-l...+l
+        in that order.
     """
-    # 1) Variables
-    sph_y = np.zeros(l * 2 + 1, dtype=np.complex128)
-    plm = np.zeros(l + 1)
+    # 1) Variables (let first dimension be m -- we tranpose sph_y later)
+    sph_y = np.zeros((l * 2 + 1, len(thetas)), dtype=np.complex128)
+    plm = np.zeros((l + 1, len(thetas)))
 
     # 2) Calculate associated legendre polynomial P_l^m
     # We use the reccurence: P_l^m = something in terms of P^{m+1}_l and P^{m+2}_l
     # Note: m = -l...l but only need to calculate 0...l due to properties
 
     # 2a) Base cases
-    x = np.cos(theta)
+    x = np.cos(thetas)
 
     plm[l] = (
         (1 if (l) % 2 == 0 else -1) * double_fact(2 * l - 1) * np.power(1 - x**2, l / 2)
@@ -86,7 +87,7 @@ def calc_spherical_harmonics(l, theta, phi):
     for m in range(0, l + 1):
         # Calculate for positive m
         coeff = np.sqrt((2 * l + 1) / (4 * np.pi) * fact(l - m) / fact(l + m)) * plm[m]
-        q_this_m = coeff * (np.cos(m * phi) + 1j * np.sin(m * phi))
+        q_this_m = coeff * (np.cos(m * phis) + 1j * np.sin(m * phis))
 
         # Entry for negative m
         if m != 0:
@@ -97,7 +98,7 @@ def calc_spherical_harmonics(l, theta, phi):
         # Entry for this m
         sph_y[m + idx_offset] += q_this_m
 
-    return sph_y
+    return sph_y.T
 
 
 @nb.njit
@@ -109,8 +110,8 @@ def sop_single_atom(n_b_list, l_list, unit_vecs):
     Q^{N_b}_l over all N_b in n_b_list and l's in l_list.
 
     Args:
-        n_b_list (any SORTED iterable of ints): Values of N_b.
-        l_list (any iterable of ints): Values of l.
+        n_b_list (any SORTED iterable of ints): Values of N_b
+        l_list (any iterable of ints): Values of l
         unit_vecs (numpy array of size 3 arrays): Positions of atoms
 
     Returns:
@@ -131,12 +132,11 @@ def sop_single_atom(n_b_list, l_list, unit_vecs):
         # A tricky math thing is that we need to keep track of all different little q at once
         # This is since norm(sum of vectors) is not the same as sum(norm of vectors)
         q_accum_all = np.zeros(2 * l + 1, dtype=np.complex128)
+        all_sph_harmonics = calc_spherical_harmonics(l, thetas, phis)
 
         for n_b in n_b_list:
             while curAtom < n_b:
-                q_accum_all += calc_spherical_harmonics(
-                    l, thetas[curAtom], phis[curAtom]
-                )
+                q_accum_all += all_sph_harmonics[curAtom]
                 curAtom += 1
 
             q_vals_all.append(
