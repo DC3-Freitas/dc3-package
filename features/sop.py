@@ -6,6 +6,13 @@ from tqdm import tqdm
 
 @nb.njit
 def fact(i):
+    """
+    Calculates i! and returns 1 is i < 0
+    Args:
+        i (int): Number to calculate factorial of
+    Returns:
+        i! if i >= 0, otherwise 1
+    """
     result = 1
     for x in range(2, i + 1):
         result *= x
@@ -14,6 +21,13 @@ def fact(i):
 
 @nb.njit
 def double_fact(i):
+    """
+    Calculates i!! and returns 1 if i < 0
+    Args:
+        i (int): Number to calculate double factorial of
+    Returns:
+        i! if i >= 0, otherwise 1
+    """
     result = 1
     for x in range(i, 0, -2):
         result *= x
@@ -22,10 +36,22 @@ def double_fact(i):
 
 @nb.njit
 def calc_spherical_harmonics(l, theta, phi):
+    """
+    Calculates spherical harmonics for m=-l...l given l,
+    theta, and phi.
+
+    Args:
+        l (float): Subscript of Y
+        theta (float): Polar angle
+        phi (float): Azimuthal angle
+    Returns:
+        Numpy array of length 2l+1 storing spherical harmonics
+        for m=-l...l in that order.
+    """
     # 1) Variables
     sph_y = np.zeros(l * 2 + 1, dtype=np.complex128)
     plm = np.zeros(l + 1)
-    
+
     # 2) Calculate associated legendre polynomial P_l^m
     # We use the reccurence: P_l^m = something in terms of P^{m+1}_l and P^{m+2}_l
     # Note: m = -l...l but only need to calculate 0...l due to properties
@@ -33,19 +59,27 @@ def calc_spherical_harmonics(l, theta, phi):
     # 2a) Base cases
     x = np.cos(theta)
 
-    plm[l] = (1 if (l) % 2 == 0 else -1) * double_fact(2 * l - 1) * np.power(1 - x ** 2, l / 2)
+    plm[l] = (
+        (1 if (l) % 2 == 0 else -1) * double_fact(2 * l - 1) * np.power(1 - x**2, l / 2)
+    )
 
     if l - 1 >= 0:
-        plm[l - 1] = x * (2 * l - 1) * (1 if (l - 1) % 2 == 0 else -1) * double_fact(2 * l - 3) * np.power(1 - x ** 2, (l - 1) / 2)
-                
+        plm[l - 1] = (
+            x
+            * (2 * l - 1)
+            * (1 if (l - 1) % 2 == 0 else -1)
+            * double_fact(2 * l - 3)
+            * np.power(1 - x**2, (l - 1) / 2)
+        )
+
     # 2b) Calculate rest of the terms
-    mul_term = - 2 * x / np.sqrt(1 - x ** 2)
+    mul_term = -2 * x / np.sqrt(1 - x**2)
 
     for m in range(l - 2, -1, -1):
         r1 = mul_term * (m + 1) / ((l + m + 1) * (l - m)) * plm[m + 1]
         r2 = -1 / ((l + m + 1) * (l - m)) * plm[m + 2]
         plm[m] = r1 + r2
-    
+
     # 3) Calculate spherical harmonics Y_l^m
     idx_offset = l
 
@@ -59,10 +93,10 @@ def calc_spherical_harmonics(l, theta, phi):
             # We can take advantage of the fact that Y_l^m = conjugate(Y_l^{-m}) * (-1)^m
             q_neg_m = (q_this_m * (1 if (-m) % 2 == 0 else -1)).conjugate()
             sph_y[-m + idx_offset] += q_neg_m
-                    
+
         # Entry for this m
         sph_y[m + idx_offset] += q_this_m
-    
+
     return sph_y
 
 
@@ -99,12 +133,18 @@ def sop_single_atom(N_b_list, l_list, unit_vecs):
         q_accum_all = np.zeros(2 * l + 1, dtype=np.complex128)
 
         for N_b in N_b_list:
-            while (curAtom < N_b):
-                q_accum_all += calc_spherical_harmonics(l, thetas[curAtom], phis[curAtom])
+            while curAtom < N_b:
+                q_accum_all += calc_spherical_harmonics(
+                    l, thetas[curAtom], phis[curAtom]
+                )
                 curAtom += 1
 
-            Q.append(np.sqrt((4 * np.pi) / (2 * l + 1) * (np.linalg.norm(q_accum_all / N_b) ** 2)))
-    
+            Q.append(
+                np.sqrt(
+                    (4 * np.pi) / (2 * l + 1) * (np.linalg.norm(q_accum_all / N_b) ** 2)
+                )
+            )
+
     # 3) Rearrange elements so that its flattened version of shape=(N_b, l)
     return np.array(Q).reshape((len(l_list), len(N_b_list))).T.flatten()
 
