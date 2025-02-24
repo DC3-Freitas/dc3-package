@@ -132,8 +132,8 @@ def sop_single_atom(n_b_list, l_list, unit_vecs):
         # This is since norm(sum of vectors) is not the same as sum(norm of vectors)
         q_accum_all = np.zeros(2 * l + 1, dtype=np.complex128)
 
-        for N_b in n_b_list:
-            while curAtom < N_b:
+        for n_b in n_b_list:
+            while curAtom < n_b:
                 q_accum_all += calc_spherical_harmonics(
                     l, thetas[curAtom], phis[curAtom]
                 )
@@ -141,7 +141,7 @@ def sop_single_atom(n_b_list, l_list, unit_vecs):
 
             Q.append(
                 np.sqrt(
-                    (4 * np.pi) / (2 * l + 1) * (np.linalg.norm(q_accum_all / N_b) ** 2)
+                    (4 * np.pi) / (2 * l + 1) * (np.linalg.norm(q_accum_all / n_b) ** 2)
                 )
             )
 
