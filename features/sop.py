@@ -123,7 +123,7 @@ def sop_single_atom(n_b_list, l_list, unit_vecs):
     phis = np.arctan2(y_coords, x_coords)
 
     # 2) Calculate each Q_l^{N_b}
-    Q = []
+    q_vals_all = []
 
     for l in l_list:
         curAtom = 0
@@ -139,14 +139,14 @@ def sop_single_atom(n_b_list, l_list, unit_vecs):
                 )
                 curAtom += 1
 
-            Q.append(
+            q_vals_all.append(
                 np.sqrt(
                     (4 * np.pi) / (2 * l + 1) * (np.linalg.norm(q_accum_all / n_b) ** 2)
                 )
             )
 
     # 3) Rearrange elements so that its flattened version of shape=(N_b, l)
-    return np.array(Q).reshape((len(l_list), len(n_b_list))).T.flatten()
+    return np.array(q_vals_all).reshape((len(l_list), len(n_b_list))).T.flatten()
 
 
 def calculate_all_sop(n_b_list, l_list, data):
