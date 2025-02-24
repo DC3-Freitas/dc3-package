@@ -103,7 +103,7 @@ def calculate_all_rsf(n_b_list, r_mults, sigma_mult, data):
     for atom in tqdm(range(num_atoms), "RSF: Preprocessing"):
         tot_dist = 0
         num_consider = 0
-        N_b_idx = 0
+        n_b_idx = 0
 
         # Just in case they are not sorted
         all_dists = sorted([neigh.distance for neigh in finder_avg.find(atom)])
@@ -112,14 +112,14 @@ def calculate_all_rsf(n_b_list, r_mults, sigma_mult, data):
             tot_dist += dist
             num_consider += 1
 
-            while N_b_idx < len(n_b_list) and num_consider == n_b_list[N_b_idx]:
-                r_avgs[atom][N_b_idx] = tot_dist / num_consider
-                N_b_idx += 1
+            while n_b_idx < len(n_b_list) and num_consider == n_b_list[n_b_idx]:
+                r_avgs[atom][n_b_idx] = tot_dist / num_consider
+                n_b_idx += 1
 
         # If there are too few atoms
-        while N_b_idx < len(n_b_list) and num_consider == n_b_list[N_b_idx]:
-            r_avgs[atom][N_b_idx] = tot_dist / num_consider
-            N_b_idx += 1
+        while n_b_idx < len(n_b_list) and num_consider == n_b_list[n_b_idx]:
+            r_avgs[atom][n_b_idx] = tot_dist / num_consider
+            n_b_idx += 1
 
     # Take column-wise maximum to calculate r_cut for each N_b
     max_avgs = np.max(r_avgs, axis=0)
