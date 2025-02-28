@@ -1,0 +1,104 @@
+# The timestep for all simulations was 1fs. The Bussi-Donadio-Parrinello thermostat [74] was employed with a
+# relaxation time of 0.1ps. In order to maintain the system at zero pressure we employed an isotropic Nosé-Hoover
+# chain barostat [75–77] with chain length of three and relaxation time of 1ps. The system size was chosen such
+# that it contained at least 17000 atoms while maintaining the system dimensions as close to a cube as possible.
+
+# For each crystal structure (and corresponding interatomic potential) the system was initialized with atoms in
+# a perfect crystal structure with lattice parameter corresponding to the zero temperature equilibrium value.
+# The system was equilibrated at the target temperature and zero pressure for 10ps followed by a period of 90ps
+# during which snapshots of the atomic coordinates were collected every 10ps.
+
+from dataclasses import dataclass
+from textwrap import dedent
+
+@dataclass
+class LammpsInput:
+    """ Dataclass for LAMMPS input file. """
+    # === General simulation parameters ===
+    dt: float = 0.001        # Timestep [ps] = 1 fs.
+    t_eq: int = 10000        # Equilibration time [ts] = 10 ps.
+    t: int = 90000           # Simulation time [ts] = 90 ps.
+    dt_t: int = 100          # Thermo information stride [ts].
+    n: int = 10              # System size.
+    dt_d: int = 10000        # Dump output stride [ts].
+    P: float = 0             # System pressure.
+    damp_T: float = 0.1      # Thermostat damping [ps].
+    damp_P: float = 1.0      # Barostat damping [ps].
+    RANDOM: int = 0          # Random number generator seed.
+
+    # === Barostat and thermostat parameters ===
+    relaxation_time: float = 0.1
+    barostat_relaxation_time: float = 1.0
+    chain_length: int = 3
+
+    # === Experiment specific parameters ===
+    melting_point: float = 1811                             # Melting point [K].
+    sim_temperature_fraction: float = 1.0                   # Fraction of melting point to simulate at
+    T: float = melting_point * sim_temperature_fraction     # Simulation temperature [K].
+    exp_name: str = "exp"                                   # Experiment name.
+
+    # === Lattice and interatomic potentials ===
+    lattice_type: str = "fcc"
+    lattice_spacing: float = 1.0
+    pair_style: str = "none"
+    pair_coeff: str = "none"
+    mass: float = 1.0
+
+    def __str__(self):
+        final = ""
+        # # create simulation variable string
+        # final += "#--------------------------- Simulation variables -----------------------------#\n"
+        # for key, value in self.__dict__.items():
+        #     if type(value) in [int, float]:
+        #         final += f"variable {key} equal {value}\n"
+        final += dedent(f"""
+            #---------------------------- Atomic setup ------------------------------------#
+            units            metal
+            timestep         {self.dt}
+            lattice          {self.lattice_type} {self.lattice_spacing}
+            region           sim_box block 0 {self.n} 0 {self.n} 0 {self.n}
+            create_box       1 sim_box
+            create_atoms     1 box
+
+            pair_style       {self.pair_style}     # interatomic potential (Lennard-Jones, EAM, etc.)
+            pair_coeff       {self.pair_coeff}     # interatomic potential parameters (ex. eam.alloy Cu_u3.eam)
+            neigh_modify     delay 0               # neighbor list update frequency (0 = every timestep)
+            mass             1 {self.mass}         # atomic mass
+            rnd              equal round(random(0,999999,{self.RANDOM}))
+            """)
+
+        final += dedent(f"""
+            #----------------------------- Equilibriation ---------------------------------#
+            velocity         all create {self.T} ${{rnd}} dist gaussian     # initial velocities
+            fix              f2 all nph iso {self.P} {self.P} {self.damp_P} # barostat
+            variable         rnd equal round(random(0,999999,0))
+            fix              f3 all temp/csvr {self.T} {self.T} {self.damp_T} ${{rnd}} # thermostat
+            run              {self.t_eq}                                               # equilibriation run
+            """)
+
+        final += dedent(f"""
+            #----------------------------- Run simulation ---------------------------------#
+            dump             d1 all custom/gz {self.dt_d} data/{self.exp_name}/dump_{self.sim_temperature_fraction}_*.gz
+                                & id type x y z                             # snapshots
+            run              {self.t}
+            undump           d1
+            min_modify       line forcezero
+            minimize         0 0 100000 100000                              # minimize energy
+            write_dump       all custom data/{self.exp_name}/dump_{self.sim_temperature_fraction}_relaxed.gz id type x y z
+            #------------------------------------------------------------------------------#
+            """)
+        return final
+    
+    def mini_str(self):
+        s = str(self)
+        for _ in range(10):
+            s = s.replace("\n\n", "\n")
+            s = s.replace("  ", " ")
+        return "\n".join([
+            line[:line.find("#")] if "#" in line else line
+            for line in s.split("\n")
+        ])
+ 
+    def write(self, filename):
+        with open(filename, "w") as f:
+            f.write(str(self))
