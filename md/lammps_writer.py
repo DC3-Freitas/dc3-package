@@ -39,7 +39,7 @@ class LammpsInput:
 
     # === Lattice and interatomic potentials ===
     lattice_type: str = "fcc"
-    lattice_spacing: float = 1.0
+    lattice_parameter: float = 1.0
     pair_style: str = "none"
     pair_coeff: str = "none"
     mass: float = 1.0
@@ -55,13 +55,13 @@ class LammpsInput:
             #---------------------------- Atomic setup ------------------------------------#
             units            metal
             timestep         {self.dt}
-            lattice          {self.lattice_type} {self.lattice_spacing}
+            lattice          {self.lattice_type} {self.lattice_parameter}
             region           sim_box block 0 {self.n} 0 {self.n} 0 {self.n}
             create_box       1 sim_box
             create_atoms     1 box
 
             pair_style       {self.pair_style}     # interatomic potential (Lennard-Jones, EAM, etc.)
-            pair_coeff       {self.pair_coeff}     # interatomic potential parameters (ex. eam.alloy Cu_u3.eam)
+            pair_coeff       * * {self.pair_coeff} # interatomic potential parameters (ex. eam.alloy Cu_u3.eam)
             neigh_modify     delay 0               # neighbor list update frequency (0 = every timestep)
             mass             1 {self.mass}         # atomic mass
             rnd              equal round(random(0,999999,{self.RANDOM}))

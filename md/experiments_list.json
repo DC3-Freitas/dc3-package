@@ -1,0 +1,11 @@
+[
+    {
+        "exp_name": "Ar",
+        "melting_point": 83.8,
+        "lattice_type": "fcc",
+        "lattice_parameter": 5.26,
+        "pair_style": "lj/cut",
+        "pair_coeff": "0.0103 3.4",
+        "mass": 39.948
+    }
+]
