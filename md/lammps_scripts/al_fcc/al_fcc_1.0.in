@@ -1,0 +1,31 @@
+
+#---------------------------- Atomic setup ------------------------------------#
+units            metal
+timestep         0.001
+lattice          fcc 4.046
+region           sim_box block 0 10 0 10 0 10
+create_box       1 sim_box
+create_atoms     1 box
+
+pair_style       eam/fs     # interatomic potential (Lennard-Jones, EAM, etc.)
+pair_coeff       * * al_eam.fs # interatomic potential parameters (ex. eam.alloy Cu_u3.eam)
+neigh_modify     delay 0               # neighbor list update frequency (0 = every timestep)
+mass             1 26.981539         # atomic mass
+rnd              equal round(random(0,999999,0))
+
+#----------------------------- Equilibriation ---------------------------------#
+velocity         all create 933.0 ${rnd} dist gaussian     # initial velocities
+fix              f2 all nph iso 0 0 1.0 # barostat
+variable         rnd equal round(random(0,999999,0))
+fix              f3 all temp/csvr 933.0 933.0 0.1 ${rnd} # thermostat
+run              10000                                               # equilibriation run
+
+#----------------------------- Run simulation ---------------------------------#
+dump             d1 all custom/gz 10000 data/al_fcc/dump_1.0_*.gz
+                    & id type x y z                             # snapshots
+run              90000
+undump           d1
+min_modify       line forcezero
+minimize         0 0 100000 100000                              # minimize energy
+write_dump       all custom data/al_fcc/dump_1.0_relaxed.gz id type x y z
+#------------------------------------------------------------------------------#

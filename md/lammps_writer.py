@@ -14,7 +14,18 @@ from textwrap import dedent
 @dataclass
 class LammpsInput:
     """ Dataclass for LAMMPS input file. """
-    # === General simulation parameters ===
+    # === Experiment specific parameters (required) ===
+    exp_name: str            # Experiment name.
+    melting_point: float     # Melting point [K].
+
+    # === Lattice and interatomic potentials (required) ===
+    lattice_type: str
+    lattice_parameter: float
+    pair_style: str
+    pair_coeff: str          # Only put the name and not the path.
+    mass: float
+
+    # === General simulation parameters (preset) ===
     dt: float = 0.001        # Timestep [ps] = 1 fs.
     t_eq: int = 10000        # Equilibration time [ts] = 10 ps.
     t: int = 90000           # Simulation time [ts] = 90 ps.
@@ -26,31 +37,15 @@ class LammpsInput:
     damp_P: float = 1.0      # Barostat damping [ps].
     RANDOM: int = 0          # Random number generator seed.
 
-    # === Barostat and thermostat parameters ===
+    # === Barostat and thermostat parameters (preset) ===
     relaxation_time: float = 0.1
     barostat_relaxation_time: float = 1.0
     chain_length: int = 3
 
-    # === Experiment specific parameters ===
-    melting_point: float = 1811                             # Melting point [K].
-    sim_temperature_fraction: float = 1.0                   # Fraction of melting point to simulate at
-    T: float = melting_point * sim_temperature_fraction     # Simulation temperature [K].
-    exp_name: str = "exp"                                   # Experiment name.
-
-    # === Lattice and interatomic potentials ===
-    lattice_type: str = "fcc"
-    lattice_parameter: float = 1.0
-    pair_style: str = "none"
-    pair_coeff: str = "none"
-    mass: float = 1.0
-
-    def __str__(self):
+    def create_lammps_in(self, sim_temperature_fraction):
+        temp = self.melting_point * sim_temperature_fraction
         final = ""
-        # # create simulation variable string
-        # final += "#--------------------------- Simulation variables -----------------------------#\n"
-        # for key, value in self.__dict__.items():
-        #     if type(value) in [int, float]:
-        #         final += f"variable {key} equal {value}\n"
+
         final += dedent(f"""
             #---------------------------- Atomic setup ------------------------------------#
             units            metal
@@ -69,22 +64,22 @@ class LammpsInput:
 
         final += dedent(f"""
             #----------------------------- Equilibriation ---------------------------------#
-            velocity         all create {self.T} ${{rnd}} dist gaussian     # initial velocities
-            fix              f2 all nph iso {self.P} {self.P} {self.damp_P} # barostat
+            velocity         all create {temp} ${{rnd}} dist gaussian                  # initial velocities
+            fix              f2 all nph iso {self.P} {self.P} {self.damp_P}            # barostat
             variable         rnd equal round(random(0,999999,0))
-            fix              f3 all temp/csvr {self.T} {self.T} {self.damp_T} ${{rnd}} # thermostat
+            fix              f3 all temp/csvr {temp} {temp} {self.damp_T} ${{rnd}}     # thermostat
             run              {self.t_eq}                                               # equilibriation run
             """)
 
         final += dedent(f"""
             #----------------------------- Run simulation ---------------------------------#
-            dump             d1 all custom/gz {self.dt_d} data/{self.exp_name}/dump_{self.sim_temperature_fraction}_*.gz
+            dump             d1 all custom/gz {self.dt_d} data/{self.exp_name}/dump_{sim_temperature_fraction}_*.gz
                                 & id type x y z                             # snapshots
             run              {self.t}
             undump           d1
             min_modify       line forcezero
             minimize         0 0 100000 100000                              # minimize energy
-            write_dump       all custom data/{self.exp_name}/dump_{self.sim_temperature_fraction}_relaxed.gz id type x y z
+            write_dump       all custom data/{self.exp_name}/dump_{sim_temperature_fraction}_relaxed.gz id type x y z
             #------------------------------------------------------------------------------#
             """)
         return final
@@ -99,6 +94,6 @@ class LammpsInput:
             for line in s.split("\n")
         ])
  
-    def write(self, filename):
+    def write(self, sim_temperature_fraction, filename):
         with open(filename, "w") as f:
-            f.write(str(self))
+            f.write(self.create_lammps_in(sim_temperature_fraction))
