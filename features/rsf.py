@@ -122,6 +122,8 @@ def calculate_all_rsf(n_b_list, r_mults, sigma_mult, data):
     max_avgs = np.max(r_avgs, axis=0)
     r_cuts = max_avgs + 4 * max_avgs * sigma_mult
 
+    # Avoid any floating point issues
+    r_cuts = np.round(r_cuts, decimals=10)
     assert np.array_equal(r_cuts, np.sort(r_cuts)), "r_cut should be sorted"
 
     # 3) Calculate features

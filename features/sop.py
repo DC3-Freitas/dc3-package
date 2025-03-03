@@ -13,7 +13,7 @@ def precalculate_sop_norm_factors(max_l):
             # Accurately precalculate the terms here to avoid overflow
             log_term = 0.5 * (math.log(2 * l + 1) - math.log(4 * math.pi) +
                               math.lgamma(l - m + 1) - math.lgamma(l + m + 1))
-            norm_factors[l][m] = math.exp(log_term)
+            norm_factors[l, m] = math.exp(log_term)
 
     return norm_factors
 
@@ -77,19 +77,35 @@ def calc_spherical_harmonics(l, thetas, phis, norm_factors):
         )
     
     # 2b) Calculate rest of the terms
-    mul_term = -2 * x / np.sqrt(1 - x**2)
+
+    # Importantly, we will run into issues when elements of x = +-1
+    # First calculate what we can and make everything else equal to 0
+    # Note that 2 * x/sqrt(1 - x^2) approaches +-infinity rather slowly
+    # so no need for tolerance regarding how close abs(x) is to 1
+    mul_term = np.zeros_like(x)
+    zero_mask = np.abs(x) == 1
+    nonzero_mask = ~zero_mask
+    mul_term[nonzero_mask] = -2 * x[nonzero_mask] / np.sqrt(1 - x[nonzero_mask]**2)
 
     for m in range(l - 2, -1, -1):
         r1 = mul_term * (m + 1) / ((l + m + 1) * (l - m)) * plm[m + 1]
         r2 = -1 / ((l + m + 1) * (l - m)) * plm[m + 2]
         plm[m] = r1 + r2
+    
+    # Now if we consider x = +-1, all entries will be 0 except for m = 0
+    # This is due to the closed form formula having (1 - x^2) term for all m != 0
+    # It is also known that at m = 0 and x = +-1:
+    # A) P^0_l(1) = 1
+    # B) P^0_l(-1) = (-1)^l
+    set_to_negative_one = (x == -1) & (l % 2 == 1) & zero_mask
+    plm[0, zero_mask] = np.where(set_to_negative_one[zero_mask], -1, 1)
 
     # 3) Calculate spherical harmonics Y_l^m
     idx_offset = l
 
     for m in range(0, l + 1):
         # Calculate for positive m
-        coeff = norm_factors[l][m] * plm[m]
+        coeff = norm_factors[l, m] * plm[m]
         q_this_m = coeff * (np.cos(m * phis) + 1j * np.sin(m * phis))
 
         # Entry for negative m
