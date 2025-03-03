@@ -23,6 +23,7 @@ class LammpsInput:
     lattice_parameter: float
     pair_style: str
     pair_coeff: str          # Only put the name and not the path.
+    element_name: str        # Ex: Al
     mass: float
 
     # === General simulation parameters (preset) ===
@@ -35,7 +36,7 @@ class LammpsInput:
     P: float = 0             # System pressure.
     damp_T: float = 0.1      # Thermostat damping [ps].
     damp_P: float = 1.0      # Barostat damping [ps].
-    RANDOM: int = 0          # Random number generator seed.
+    RANDOM: int = 42         # Random number generator seed.
 
     # === Barostat and thermostat parameters (preset) ===
     relaxation_time: float = 0.1
@@ -44,42 +45,42 @@ class LammpsInput:
 
     def create_lammps_in(self, sim_temperature_fraction):
         temp = self.melting_point * sim_temperature_fraction
-        final = ""
 
-        final += dedent(f"""
+        final = dedent(f"""
             #---------------------------- Atomic setup ------------------------------------#
             units            metal
             timestep         {self.dt}
+            boundary         p p p
             lattice          {self.lattice_type} {self.lattice_parameter}
             region           sim_box block 0 {self.n} 0 {self.n} 0 {self.n}
             create_box       1 sim_box
             create_atoms     1 box
 
-            pair_style       {self.pair_style}     # interatomic potential (Lennard-Jones, EAM, etc.)
-            pair_coeff       * * {self.pair_coeff} # interatomic potential parameters (ex. eam.alloy Cu_u3.eam)
-            neigh_modify     delay 0               # neighbor list update frequency (0 = every timestep)
-            mass             1 {self.mass}         # atomic mass
-            rnd              equal round(random(0,999999,{self.RANDOM}))
+            pair_style       {self.pair_style}                                             # interatomic potential (Lennard-Jones, EAM, etc.)
+            pair_coeff       * * ${{potentials_dir}}/{self.pair_coeff} {self.element_name} # interatomic potential parameters (ex. eam.alloy Cu_u3.eam)
+            pair_modify      tail yes
+            neigh_modify     delay 0                                                       # neighbor list update frequency (0 = every timestep)
+            mass             1 {self.mass}                                                 # atomic mass
+            variable         rnd equal round(random(0,999999,{self.RANDOM}))
             """)
 
         final += dedent(f"""
             #----------------------------- Equilibriation ---------------------------------#
-            velocity         all create {temp} ${{rnd}} dist gaussian                  # initial velocities
-            fix              f2 all nph iso {self.P} {self.P} {self.damp_P}            # barostat
+            velocity         all create {temp} ${{rnd}} dist gaussian              # initial velocities
+            fix              f2 all nph iso {self.P} {self.P} {self.damp_P}        # barostat
             variable         rnd equal round(random(0,999999,0))
-            fix              f3 all temp/csvr {temp} {temp} {self.damp_T} ${{rnd}}     # thermostat
-            run              {self.t_eq}                                               # equilibriation run
+            fix              f3 all temp/csvr {temp} {temp} {self.damp_T} ${{rnd}} # thermostat
+            run              {self.t_eq}                                           # equilibriation run
             """)
 
         final += dedent(f"""
             #----------------------------- Run simulation ---------------------------------#
-            dump             d1 all custom/gz {self.dt_d} data/{self.exp_name}/dump_{sim_temperature_fraction}_*.gz
-                                & id type x y z                             # snapshots
+            dump             d1 all custom {self.dt_d} md/data/{self.exp_name}/dump_{sim_temperature_fraction}.gz id type x y z # snapshots
             run              {self.t}
             undump           d1
             min_modify       line forcezero
-            minimize         0 0 100000 100000                              # minimize energy
-            write_dump       all custom data/{self.exp_name}/dump_{sim_temperature_fraction}_relaxed.gz id type x y z
+            minimize         0 0 100000 100000                                                                               # minimize energy
+            write_dump       all custom md/data/{self.exp_name}/dump_{sim_temperature_fraction}_relaxed.gz id type x y z
             #------------------------------------------------------------------------------#
             """)
         return final

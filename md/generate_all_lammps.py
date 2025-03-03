@@ -2,7 +2,7 @@ import numpy as np
 import json
 from md.lammps_writer import LammpsInput
 
-SIM_TEMPERATURE_FRACTIONS = np.round(np.arange(0, 1.60 + 0.04, 0.04), 6)
+SIM_TEMPERATURE_FRACTIONS = np.round(np.arange(0.04, 1.60 + 0.04, 0.04), 6)
 
 with open("md/experiments_list.json") as f:
     x = f.read()

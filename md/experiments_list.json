@@ -6,6 +6,7 @@
         "lattice_parameter": 4.046,
         "pair_style": "eam/fs",
         "pair_coeff": "al_eam.fs",
+        "element_name": "Al",
         "mass": 26.981539
     }
 ]
