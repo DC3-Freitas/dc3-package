@@ -2,21 +2,20 @@ import numpy as np
 import numba as nb
 from ovito.data import NearestNeighborFinder
 from tqdm import tqdm
+import math
 
+def precalculate_sop_norm_factors(max_l):
+    norm_factors = np.zeros((max_l + 1, max_l + 1))
 
-@nb.njit
-def fact(i):
-    """
-    Calculates i! and returns 1 is i < 0
-    Args:
-        i (int): Number to calculate factorial of
-    Returns:
-        i! if i >= 0, otherwise 1
-    """
-    result = 1
-    for x in range(2, i + 1):
-        result *= x
-    return result
+    for l in range(0, max_l + 1):
+        # As discussed below, we only need m >= 0
+        for m in range(l + 1):
+            # Accurately precalculate the terms here to avoid overflow
+            log_term = 0.5 * (math.log(2 * l + 1) - math.log(4 * math.pi) +
+                              math.lgamma(l - m + 1) - math.lgamma(l + m + 1))
+            norm_factors[l][m] = math.exp(log_term)
+
+    return norm_factors
 
 
 @nb.njit
@@ -35,10 +34,14 @@ def double_fact(i):
 
 
 @nb.njit
-def calc_spherical_harmonics(l, thetas, phis):
+def calc_spherical_harmonics(l, thetas, phis, norm_factors):
     """
     Calculates spherical harmonics for each atom described
     by thetas and phis for m=-l...+l
+
+    **Note: due to numba optimization, double_fact(2 * l - 1) can
+    overflow if l is large. The current l=16 maximum is as large
+    as it can go without overflowing!**
 
     Args:
         l (float): Subscript of Y
@@ -59,7 +62,7 @@ def calc_spherical_harmonics(l, thetas, phis):
 
     # 2a) Base cases
     x = np.cos(thetas)
-
+    
     plm[l] = (
         (1 if (l) % 2 == 0 else -1) * double_fact(2 * l - 1) * np.power(1 - x**2, l / 2)
     )
@@ -72,7 +75,7 @@ def calc_spherical_harmonics(l, thetas, phis):
             * double_fact(2 * l - 3)
             * np.power(1 - x**2, (l - 1) / 2)
         )
-
+    
     # 2b) Calculate rest of the terms
     mul_term = -2 * x / np.sqrt(1 - x**2)
 
@@ -86,7 +89,7 @@ def calc_spherical_harmonics(l, thetas, phis):
 
     for m in range(0, l + 1):
         # Calculate for positive m
-        coeff = np.sqrt((2 * l + 1) / (4 * np.pi) * fact(l - m) / fact(l + m)) * plm[m]
+        coeff = norm_factors[l][m] * plm[m]
         q_this_m = coeff * (np.cos(m * phis) + 1j * np.sin(m * phis))
 
         # Entry for negative m
@@ -102,7 +105,7 @@ def calc_spherical_harmonics(l, thetas, phis):
 
 
 @nb.njit
-def sop_single_atom(n_b_list, l_list, unit_vecs):
+def sop_single_atom(n_b_list, l_list, unit_vecs, norm_factors):
     """
     Computes the feature vector for a single atom.
 
@@ -132,7 +135,7 @@ def sop_single_atom(n_b_list, l_list, unit_vecs):
         # A tricky math thing is that we need to keep track of all different little q at once
         # This is since norm(sum of vectors) is not the same as sum(norm of vectors)
         q_accum_all = np.zeros(2 * l + 1, dtype=np.complex128)
-        all_sph_harmonics = calc_spherical_harmonics(l, thetas, phis)
+        all_sph_harmonics = calc_spherical_harmonics(l, thetas, phis, norm_factors)
 
         for n_b in n_b_list:
             while curAtom < n_b:
@@ -171,11 +174,13 @@ def calculate_all_sop(n_b_list, l_list, data):
     feature_vec = []
     finder = NearestNeighborFinder(max(n_b_list), data)
 
+    norm_factors = precalculate_sop_norm_factors(max(l_list))
+    
     # 2) Iterate over each atom and compute sop vector for it
     for atom in tqdm(range(num_atoms), desc="SOP: Calculating"):
         unit_vecs = np.array(
             [neigh.delta / np.linalg.norm(neigh.delta) for neigh in finder.find(atom)]
         )
-        feature_vec.append(sop_single_atom(n_b_list, l_list, unit_vecs))
+        feature_vec.append(sop_single_atom(n_b_list, l_list, unit_vecs, norm_factors))
 
     return np.array(feature_vec)
