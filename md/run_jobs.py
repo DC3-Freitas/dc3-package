@@ -1,6 +1,7 @@
 import os
 from textwrap import dedent
 import subprocess
+import sys
 
 runner_template = dedent("""\
     #!/bin/bash
@@ -22,7 +23,13 @@ runner_template = dedent("""\
                -var potentials_dir md/potentials
     """)
 
+selected_experiments = None
+if len(sys.argv) > 1:
+    selected_experiments = sys.argv[1:]
+    
 for exp_name in os.listdir("md/lammps_scripts"):
+    if selected_experiments and exp_name not in selected_experiments:
+        continue
     for file_name in os.listdir(f"md/lammps_scripts/{exp_name}"):
         file_path = f"md/lammps_scripts/{exp_name}/{file_name}"
         runner_content = runner_template.format(file_name=file_name, file_path=file_path)

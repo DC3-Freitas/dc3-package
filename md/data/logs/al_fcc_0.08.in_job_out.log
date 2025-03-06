@@ -27,20 +27,20 @@ Per MPI rank memory allocation (min/avg/max) = 4.462 | 4.462 | 4.462 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press          Volume    
          0   74.64         -13642.623      0             -13604.041      214.46         66233.489    
      10000   73.360586     -13605.591      0             -13567.671     -301.15514      66615.685    
-Loop time of 86.8296 on 1 procs for 10000 steps with 4000 atoms
+Loop time of 86.141 on 1 procs for 10000 steps with 4000 atoms
 
-Performance: 9.951 ns/day, 2.412 hours/ns, 115.168 timesteps/s, 460.673 katom-step/s
-99.2% CPU use with 1 MPI tasks x 1 OpenMP threads
+Performance: 10.030 ns/day, 2.393 hours/ns, 116.089 timesteps/s, 464.355 katom-step/s
+99.5% CPU use with 1 MPI tasks x 1 OpenMP threads
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 85.333     | 85.333     | 85.333     |   0.0 | 98.28
+Pair    | 84.636     | 84.636     | 84.636     |   0.0 | 98.25
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.28696    | 0.28696    | 0.28696    |   0.0 |  0.33
-Output  | 0.00016438 | 0.00016438 | 0.00016438 |   0.0 |  0.00
-Modify  | 1.0923     | 1.0923     | 1.0923     |   0.0 |  1.26
-Other   |            | 0.1175     |            |       |  0.14
+Comm    | 0.29241    | 0.29241    | 0.29241    |   0.0 |  0.34
+Output  | 5.332e-05  | 5.332e-05  | 5.332e-05  |   0.0 |  0.00
+Modify  | 1.0945     | 1.0945     | 1.0945     |   0.0 |  1.27
+Other   |            | 0.1176     |            |       |  0.14
 
 Nlocal:           4000 ave        4000 max        4000 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -61,20 +61,20 @@ Per MPI rank memory allocation (min/avg/max) = 4.462 | 4.462 | 4.462 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press          Volume    
      10000   73.360586     -13605.591      0             -13567.671     -301.15514      66615.685    
     100000   74.264678     -13604.869      0             -13566.481      320.58328      66565.734    
-Loop time of 829.025 on 1 procs for 90000 steps with 4000 atoms
+Loop time of 837.993 on 1 procs for 90000 steps with 4000 atoms
 
-Performance: 9.380 ns/day, 2.559 hours/ns, 108.561 timesteps/s, 434.245 katom-step/s
+Performance: 9.279 ns/day, 2.586 hours/ns, 107.399 timesteps/s, 429.598 katom-step/s
 99.5% CPU use with 1 MPI tasks x 1 OpenMP threads
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 815.51     | 815.51     | 815.51     |   0.0 | 98.37
+Pair    | 824.31     | 824.31     | 824.31     |   0.0 | 98.37
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 2.5678     | 2.5678     | 2.5678     |   0.0 |  0.31
-Output  | 0.14599    | 0.14599    | 0.14599    |   0.0 |  0.02
-Modify  | 9.7645     | 9.7645     | 9.7645     |   0.0 |  1.18
-Other   |            | 1.042      |            |       |  0.13
+Comm    | 2.5629     | 2.5629     | 2.5629     |   0.0 |  0.31
+Output  | 0.14527    | 0.14527    | 0.14527    |   0.0 |  0.02
+Modify  | 9.9008     | 9.9008     | 9.9008     |   0.0 |  1.18
+Other   |            | 1.073      |            |       |  0.13
 
 Nlocal:           4000 ave        4000 max        4000 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -94,7 +94,7 @@ Per MPI rank memory allocation (min/avg/max) = 5.587 | 5.587 | 5.587 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press          Volume    
     100000   74.264678     -13604.869      0             -13566.481      320.58328      66565.734    
     100056   74.264678     -13642.139      0             -13603.751     -3610.4769      66565.734    
-Loop time of 1.14084 on 1 procs for 56 steps with 4000 atoms
+Loop time of 1.1474 on 1 procs for 56 steps with 4000 atoms
 
 99.6% CPU use with 1 MPI tasks x 1 OpenMP threads
 
@@ -110,12 +110,12 @@ Minimization stats:
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 1.1311     | 1.1311     | 1.1311     |   0.0 | 99.15
+Pair    | 1.1377     | 1.1377     | 1.1377     |   0.0 | 99.15
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.0035956  | 0.0035956  | 0.0035956  |   0.0 |  0.32
+Comm    | 0.00354    | 0.00354    | 0.00354    |   0.0 |  0.31
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.006108   |            |       |  0.54
+Other   |            | 0.006187   |            |       |  0.54
 
 Nlocal:           4000 ave        4000 max        4000 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -128,4 +128,4 @@ Total # of neighbors = 285688
 Ave neighs/atom = 71.422
 Neighbor list builds = 0
 Dangerous builds = 0
-Total wall time: 0:15:17
+Total wall time: 0:15:25

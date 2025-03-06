@@ -1,5 +1,56 @@
 [
-    {
+   {
+        "exp_name": "ar_fcc",
+        "melting_point": 83.8,
+        "lattice_type": "fcc",
+        "lattice_parameter": 5.26,
+        "pair_style": "lj/cut 10.2",
+        "pair_coeff": "0.0103 3.4",
+	"element_name": "Ar",
+        "mass": 39.948
+   }, 
+   {
+        "exp_name": "fe_bcc",
+        "melting_point": 1811,
+        "lattice_type": "bcc",
+        "lattice_parameter": 2.856,
+        "pair_style": "eam/fs",
+        "pair_coeff": "fe_eam.fs",
+        "element_name": "Fe",
+        "mass": 55.845
+   },
+   {
+        "exp_name": "fe_bcc",
+        "melting_point": 1811,
+        "lattice_type": "bcc",
+        "lattice_parameter": 2.856,
+        "pair_style": "eam/fs",
+        "pair_coeff": "fe_eam.fs",
+        "element_name": "Fe",
+        "mass": 55.845
+   },
+ 
+   {
+        "exp_name": "fe_bcc",
+        "melting_point": 1811,
+        "lattice_type": "bcc",
+        "lattice_parameter": 2.856,
+        "pair_style": "eam/fs",
+        "pair_coeff": "fe_eam.fs",
+        "element_name": "Fe",
+        "mass": 55.845
+   },
+   {
+        "exp_name": "mg_hcp",
+        "melting_point": 923,
+        "lattice_type": "hcp",
+        "lattice_parameter": 3.2094,
+        "pair_style": "eam/fs",
+        "pair_coeff": "mg_eam.fs",
+        "element_name": "Mg",
+        "mass": 24.305
+  },
+  {
         "exp_name": "al_fcc",
         "melting_point": 933,
         "lattice_type": "fcc",
