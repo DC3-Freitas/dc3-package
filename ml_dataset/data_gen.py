@@ -31,13 +31,21 @@ def create(structure_name, fname, alpha_min, alpha_max, num_lattices):
     for displaced_lattice in tqdm(generator.generate_range(alpha_min, alpha_max, num_lattices)):
         data.append(compute_feature_vectors(displaced_lattice, None))
     data = np.hstack(data)
-    np.savetxt(f"data/{structure_name}.gz", data)
+    np.savetxt(f"ml_dataset/data_new/{structure_name}.gz", data)
 
 if __name__ == "__main__":
+    # create("bcc", "lattice/lammps_lattices/data/bcc.gz", 0, 0.25, 40)
+    """
     # Create FCC dataset
-    print("== generating FCC dataset... ==")
-    create("fcc", "lattice/lammps_lattices/data/fcc.gz", 0, 0.25, 40) # values from the paper
+    create("fcc", "lattice/lammps_lattices/data/fcc.gz", 0, 0, 40) # values from the paper
     # Create BCC dataset
     create("bcc", "lattice/lammps_lattices/data/bcc.gz", 0, 0.25, 40)
     # Create SC dataset
     create("sc", "lattice/lammps_lattices/data/sc.gz", 0, 0.25, 40)
+    # Create HCP dataset
+    create("hcp", "lattice/lammps_lattices/data/hcp.gz", 0, 0.25, 40)
+    # Create CD dataset
+    create("cd", "lattice/lammps_lattices/data/cd.gz", 0, 0.25, 40)
+    # Create HD dataset
+    create("hd", "lattice/lammps_lattices/data/hd.gz", 0, 0.25, 40)
+    """

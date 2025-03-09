@@ -32,6 +32,8 @@ class CrystalDataset(Dataset):
         stds = np.std(self.data, axis=0)
         self.data = (self.data - means) / stds
         self.labels = np.array(self.labels)
+        np.savetxt("ml/models/means.txt", means)
+        np.savetxt("ml/models/stds.txt", stds)
         print(f"Loaded dataset with {len(self.label_map)} classes and {len(self.data)} samples")
     
     def __len__(self):

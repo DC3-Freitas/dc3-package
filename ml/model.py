@@ -13,9 +13,10 @@ class MLP_Model(nn.Module):
             nn.ReLU(),
             nn.Linear(100, 100),
             nn.ReLU(),
-            nn.Linear(100, 3),
+            nn.Linear(100, 6),
             nn.Softmax(dim=1)
         )
     
     def forward(self, x):
+
         return self.network(x)
