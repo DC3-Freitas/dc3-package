@@ -33,6 +33,7 @@ def compute_feature_for_simulation(file_info):
 
     # Shuffle features and take first N_USE (17000)
     np.random.shuffle(features)
+    os.makedirs(f"md/features/{exp_name}", exist_ok=True)
     np.savetxt(f"md/features/{exp_name}/feature_{sim_temp_id}.gz", features[:N_USE])
 
     if len(features) < N_USE:
