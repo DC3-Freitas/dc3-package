@@ -1,0 +1,32 @@
+
+#---------------------------- Atomic setup ------------------------------------#
+units            metal
+timestep         0.001
+boundary         p p p
+lattice          diamond 5.43
+region           sim_box block 0 10 0 10 0 10
+create_box       1 sim_box
+create_atoms     1 box
+
+pair_style       edip                                             # interatomic potential (Lennard-Jones, EAM, etc.)
+pair_coeff       * * ${potentials_dir}/si.edip Si # interatomic potential parameters (ex. eam.alloy Cu_u3.eam)
+pair_modify      tail yes
+neigh_modify     delay 0                                                       # neighbor list update frequency (0 = every timestep)
+mass             1 28.0855                                                 # atomic mass
+variable         rnd equal round(random(0,999999,42))
+
+#----------------------------- Equilibriation ---------------------------------#
+velocity         all create 2429.2799999999997 ${rnd} dist gaussian              # initial velocities
+fix              f2 all nph iso 0 0 1.0        # barostat
+variable         rnd equal round(random(0,999999,0))
+fix              f3 all temp/csvr 2429.2799999999997 2429.2799999999997 0.1 ${rnd} # thermostat
+run              10000                                           # equilibriation run
+
+#----------------------------- Run simulation ---------------------------------#
+dump             d1 all custom 10000 md/data/si_cd/dump_1.44.gz id type x y z # snapshots
+run              90000
+undump           d1
+min_modify       line forcezero
+minimize         0 0 100000 100000                                                                               # minimize energy
+write_dump       all custom md/data/si_cd/dump_1.44_relaxed.gz id type x y z
+#------------------------------------------------------------------------------#

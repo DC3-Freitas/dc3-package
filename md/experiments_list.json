@@ -38,5 +38,15 @@
           "pair_coeff": "al_eam.fs",
           "element_name": "Al",
           "mass": 26.981539
+     },
+     {
+          "exp_name": "si_cd",
+          "melting_point": 1687,
+          "lattice_type": "diamond",
+          "lattice_parameter": 5.43,
+          "pair_style": "edip",
+          "pair_coeff": "si.edip",
+          "element_name": "Si",
+          "mass": 28.0855
      }
 ]
