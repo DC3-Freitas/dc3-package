@@ -32,16 +32,11 @@ means = torch.from_numpy(np.loadtxt("ml/models/means.txt")).float()
 stds = torch.from_numpy(np.loadtxt("ml/models/stds.txt")).float()
 
 for exp_name in os.listdir("md/features"):
-    # if exp_name ==  "al_fcc":
-    #     continue
     acc = [] #np.zeros_like(SIM_TEMPERATURE_FRACTIONS)
-    for file_name in os.listdir(f"ml_dataset/data"):
+    for file_name in os.listdir(f"md/features/{exp_name}"):
         # Get file info 
-        if not file_name.startswith("hcp"):
-            continue
-        #file_path = f"md/features/{exp_name}/{file_name}"
-        file_path = f"ml_dataset/data/{file_name}"
-        sim_temp_id = file_name[:-3].split("_")[1] # file_name[8:-3]
+        file_path = f"md/features/{exp_name}/{file_name}"
+        sim_temp_id = file_name[8:-3]
 
         # Get data
         data = torch.from_numpy(np.loadtxt(file_path)).float()
@@ -58,12 +53,11 @@ for exp_name in os.listdir("md/features"):
         correct = (preds == correct_map[exp_name]).sum().item()
         
         # Log info
-        #idx = np.where(SIM_TEMPERATURE_FRACTIONS == float(sim_temp_id))[0][0]
+        idx = np.where(SIM_TEMPERATURE_FRACTIONS == float(sim_temp_id))[0][0]
         #acc[idx] = correct / len(data)
         acc.append(correct / len(data))
         print(f"Accuracy for {exp_name} at {sim_temp_id}: {correct / len(data)}")
     res[exp_name] = acc
-    break
 
 # np.savetxt("acc.txt", acc)
 np.save("res.npy", res)

@@ -14,7 +14,8 @@ class MLP_Model(nn.Module):
             nn.Linear(100, 100),
             nn.ReLU(),
             nn.Linear(100, 6),
-            nn.Softmax(dim=1)
+            # nn.Softmax(dim=1)
+            nn.LogSoftmax(dim=1)
         )
     
     def forward(self, x):
