@@ -2,7 +2,6 @@
 PyTorch Dataset for crystal structures
 """
 
-import torch
 from torch.utils.data import Dataset
 import numpy as np
 import os
@@ -11,29 +10,35 @@ from tqdm import tqdm
 class CrystalDataset(Dataset):
     def __init__(self, folder):
         print(f"Loading CrystalDataset from {folder}")
+
         self.data = []
         self.labels = []
         self.label_map = {}
+
         for f in tqdm(os.listdir(folder)):
             if f.endswith(".gz"):
                 data = np.loadtxt(os.path.join(folder, f))
-                # check data integrity
+
+                # Check data integrity
                 if np.any(np.isnan(data)):
                     print(f"Skipping {f} due to NaN values")
                     continue
+                
+                # Name should be in the form <strcture>_number.gz
                 label = f.split("_")[0]
                 if label not in self.label_map:
                     self.label_map[label] = len(self.label_map)
+
                 self.data.append(data)
                 self.labels += [self.label_map[label] for _ in range(data.shape[0])]
+
         self.data = np.vstack(self.data)
-        # normalize data
-        means = np.mean(self.data, axis=0)
-        stds = np.std(self.data, axis=0)
-        self.data = (self.data - means) / stds
         self.labels = np.array(self.labels)
-        np.savetxt("ml/models/means.txt", means)
-        np.savetxt("ml/models/stds.txt", stds)
+
+        # Normalization parameters (normalize inside the model instead)
+        self.means = np.mean(self.data, axis=0)
+        self.stds = np.std(self.data, axis=0)
+
         print(f"Loaded dataset with {len(self.label_map)} classes and {len(self.data)} samples")
     
     def __len__(self):
