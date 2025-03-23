@@ -4,8 +4,14 @@ import numpy as np
 import os
 import multiprocessing
 from concurrent.futures import ProcessPoolExecutor
+import sys
 
 N_USE = 17000
+
+selected_experiments = None
+
+if len(sys.argv) > 1:
+    selected_experiments = sys.argv[1:]
 
 def compute_feature_for_simulation(file_info):
     # Random seed
@@ -45,6 +51,8 @@ if __name__ == '__main__':
     sims_to_process = []
 
     for exp_name in os.listdir("md/data"):
+        if selected_experiments and exp_name not in selected_experiments:
+            continue
         for file_name in os.listdir(f"md/data/{exp_name}"):
             # Don't use relaxed data or logs
             if "relaxed" in file_name or exp_name == "logs":
