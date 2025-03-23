@@ -11,6 +11,7 @@ with open("md/experiments_list.json") as f:
     data = json.loads(x)
     for exp in data:
         os.makedirs(f"md/lammps_scripts/{exp['exp_name']}", exist_ok=True)
+        
         # Generate data at each simulation temperature fraction
         lammps_input = LammpsInput(**exp)
         for frac in SIM_TEMPERATURE_FRACTIONS:

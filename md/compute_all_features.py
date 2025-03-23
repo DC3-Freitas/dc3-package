@@ -8,11 +8,6 @@ import sys
 
 N_USE = 17000
 
-selected_experiments = None
-
-if len(sys.argv) > 1:
-    selected_experiments = sys.argv[1:]
-
 def compute_feature_for_simulation(file_info):
     # Random seed
     np.random.seed(42)
@@ -47,6 +42,12 @@ def compute_feature_for_simulation(file_info):
 
 
 if __name__ == '__main__':
+    # Only proccess selected experiments
+    selected_experiments = None
+
+    if len(sys.argv) > 1:
+        selected_experiments = sys.argv[1:]
+    
     # Get all (exp name, file name) that we want to proccess
     sims_to_process = []
 
