@@ -1,3 +1,4 @@
+"""
 from ml.model import MLP_Model
 import torch
 import os
@@ -10,7 +11,7 @@ SIM_TEMPERATURE_FRACTIONS = np.round(np.arange(0.04, 1.60 + 0.04, 0.04), 6)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = MLP_Model()
-model.load_state_dict(torch.load("ml/models/model_99.pt", weights_only=True))
+model.load_state_dict(torch.load("ml/models/model_2025-03-23_14-15-09.pt"))
 model.to(device)
 
 # Eval mode
@@ -25,7 +26,8 @@ res = {}
 correct_map = {
     "al_fcc": 2,
     "fe_bcc": 0,
-    "mg_hcp": 3
+    "mg_hcp": 3,
+    "si_cd" : 1,
 }
 
 means = torch.from_numpy(np.loadtxt("ml/models/means.txt")).float()
@@ -42,7 +44,7 @@ for exp_name in os.listdir("md/features"):
         data = torch.from_numpy(np.loadtxt(file_path)).float()
         # means = np.mean(data, axis=0)
         # stds = np.std(data, axis=0)
-        data = (data - means) / stds
+        # data = (data - means) / stds
         # data = torch.from_numpy(data).float()
 
         # Prediction
@@ -73,3 +75,4 @@ for exp_name in res:
 
 #plt.plot(SIM_TEMPERATURE_FRACTIONS, acc)
 plt.show()
+"""
