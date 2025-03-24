@@ -9,7 +9,7 @@ create_box       1 sim_box
 create_atoms     1 box
 
 pair_style       edip                                             # interatomic potential (Lennard-Jones, EAM, etc.)
-pair_coeff       * * ${potentials_dir}/si.edip Si # interatomic potential parameters (ex. eam.alloy Cu_u3.eam)
+pair_coeff       * * ${potentials_dir}/si.edip Si # interatomic potential parameters (ex. eam.alloy ${potentials_dir}/Cu_u3.eam)
 pair_modify      tail yes
 neigh_modify     delay 0                                                       # neighbor list update frequency (0 = every timestep)
 mass             1 28.0855                                                 # atomic mass

@@ -6,11 +6,11 @@ import sys
 runner_template = dedent("""\
     #!/bin/bash
     #SBATCH --job-name={file_name}
-    #SBATCH --ntasks-per-node=1
+    #SBATCH --ntasks-per-node=16
     #SBATCH --nodes 1
     #SBATCH --output=md/data/logs/{file_name}_job_out.log
     #SBATCH --error=md/data/logs/{file_name}_job_err.log
-    #SBATCH --time 00:30:00
+    #SBATCH --time 23:00:00
     #SBATCH --partition sched_mit_rodrigof_r8
     
     # Load any necessary modules

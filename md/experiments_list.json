@@ -1,5 +1,15 @@
 [
      {
+          "exp_name": "al_fcc",
+          "melting_point": 933,
+          "lattice_type": "fcc",
+          "lattice_parameter": 4.046,
+          "pair_style": "eam/fs",
+          "pair_coeff": "${potentials_dir}/al_eam.fs",
+          "element_name": "Al",
+          "mass": 26.981539
+     },
+     {
           "exp_name": "ar_fcc",
           "melting_point": 83.8,
           "lattice_type": "fcc",
@@ -10,14 +20,34 @@
           "mass": 39.948
      },
      {
+          "exp_name": "li_bcc",
+          "melting_point": 453.7,
+          "lattice_type": "bcc",
+          "lattice_parameter": 3.51,
+          "pair_style": "snap",
+          "pair_coeff": "${potentials_dir}/li_snap.snapcoeff ${potentials_dir}/li_snap.snapparam",
+          "element_name": "Li",
+          "mass": 6.941
+     },
+     {
           "exp_name": "fe_bcc",
           "melting_point": 1811,
           "lattice_type": "bcc",
           "lattice_parameter": 2.856,
           "pair_style": "eam/fs",
-          "pair_coeff": "fe_eam.fs",
+          "pair_coeff": "${potentials_dir}/fe_eam.fs",
           "element_name": "Fe",
           "mass": 55.845
+     },
+     {
+          "exp_name": "ti_hcp",
+          "melting_point": 1941,
+          "lattice_type": "hcp",
+          "lattice_parameter": 2.951,
+          "pair_style": "meam/spline",
+          "pair_coeff": "${potentials_dir}/ti_meam.spline",
+          "element_name": "Ti",
+          "mass": 47.867
      },
      {
           "exp_name": "mg_hcp",
@@ -25,19 +55,9 @@
           "lattice_type": "hcp",
           "lattice_parameter": 3.2094,
           "pair_style": "eam/fs",
-          "pair_coeff": "mg_eam.fs",
+          "pair_coeff": "${potentials_dir}/mg_eam.fs",
           "element_name": "Mg",
           "mass": 24.305
-     },
-     {
-          "exp_name": "al_fcc",
-          "melting_point": 933,
-          "lattice_type": "fcc",
-          "lattice_parameter": 4.046,
-          "pair_style": "eam/fs",
-          "pair_coeff": "al_eam.fs",
-          "element_name": "Al",
-          "mass": 26.981539
      },
      {
           "exp_name": "si_cd",
@@ -45,8 +65,18 @@
           "lattice_type": "diamond",
           "lattice_parameter": 5.43,
           "pair_style": "edip",
-          "pair_coeff": "si.edip",
+          "pair_coeff": "${potentials_dir}/si.edip",
           "element_name": "Si",
           "mass": 28.0855
+     },
+     {
+          "exp_name": "ge_cd",
+          "melting_point": 1211,
+          "lattice_type": "diamond",
+          "lattice_parameter": 5.658,
+          "pair_style": "tersoff",
+          "pair_coeff": "${potentials_dir}/ge.tersoff",
+          "element_name": "Ge",
+          "mass": 72.64
      }
 ]

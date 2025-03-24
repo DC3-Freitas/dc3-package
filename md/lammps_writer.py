@@ -22,7 +22,7 @@ class LammpsInput:
     lattice_type: str
     lattice_parameter: float
     pair_style: str
-    pair_coeff: str          # Only put the name and not the path.
+    pair_coeff: str          # Put in the form: ${potentials_dir}/file (can stack many if necessary)
     element_name: str        # Ex: Al
     mass: float
 
@@ -57,7 +57,7 @@ class LammpsInput:
             create_atoms     1 box
 
             pair_style       {self.pair_style}                                             # interatomic potential (Lennard-Jones, EAM, etc.)
-            pair_coeff       * * ${{potentials_dir}}/{self.pair_coeff} {self.element_name} # interatomic potential parameters (ex. eam.alloy Cu_u3.eam)
+            pair_coeff       * * {self.pair_coeff} {self.element_name if "lj/cut" not in self.pair_style else ""} # interatomic potential parameters (ex. eam.alloy ${{potentials_dir}}/Cu_u3.eam)
             pair_modify      tail yes
             neigh_modify     delay 0                                                       # neighbor list update frequency (0 = every timestep)
             mass             1 {self.mass}                                                 # atomic mass
