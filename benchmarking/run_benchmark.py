@@ -1,6 +1,7 @@
 from ml.model import MLP_Model
 import torch
 import os
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -10,11 +11,18 @@ from benchmarking.heuristics import compute_heuristic_accuracy
 
 SIM_TEMPERATURE_FRACTIONS = np.round(np.arange(0.04, 1.60 + 0.04, 0.04), 6)
 
+EXP_TO_CLASSIFIERS = {
+    "al_fcc": ["Data-Centric Crystal Classifier", "Common Neighbor Analysis (Non-Diamond)", "Interval Common Neighbor Alaysis", "Ackland-Jones Analysis"],
+    "li_bcc": ["Data-Centric Crystal Classifier", "Common Neighbor Analysis (Non-Diamond)", "Interval Common Neighbor Alaysis", "Ackland-Jones Analysis", "VoroTop Analysis"],
+    "ti_hcp": ["Data-Centric Crystal Classifier", "Common Neighbor Analysis (Non-Diamond)", "Interval Common Neighbor Alaysis", "Ackland-Jones Analysis"],
+    "ge_cd" : ["Data-Centric Crystal Classifier", "Common Neighbor Analysis (Diamond)", "Chill+"]
+}
+
 CORRECT_MAP_DC3 = {
     "al_fcc": 2,
-    "fe_bcc": 0,
-    "mg_hcp": 3,
-    "si_cd":  1,
+    "li_bcc": 0,
+    "ti_hcp": 3,
+    "ge_cd" : 1
 }
 
 # MODEL
@@ -22,7 +30,7 @@ CORRECT_MAP_DC3 = {
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = MLP_Model()
-model.load_state_dict(torch.load("ml/models/model_2025-03-23_14-15-09.pt", weights_only=True))
+model.load_state_dict(torch.load("ml/models/model_2025-03-23_14-15-09.pt", map_location=device, weights_only=True))
 model.to(device)
 model.eval()
 
@@ -64,14 +72,30 @@ def run_benchmark(exp_name, classifiers):
     df.set_index("T/T_m", inplace=True)
     df.to_csv(f"benchmarking/accuracies/{exp_name}.csv")
 
-        
+if __name__ == '__main__':
+    # Only proccess selected experiments (if such are provided, otherwise proccess all)
+    selected_experiments = None
+
+    if len(sys.argv) > 1:
+        selected_experiments = sys.argv[1:]
+    
+    for exp_name, classifiers in EXP_TO_CLASSIFIERS.items():
+        if selected_experiments and exp_name not in selected_experiments:
+            continue
+
+        print(f"Running benchmark for {exp_name}")
+        run_benchmark(exp_name, classifiers)
+
+    
+# run_benchmark("li_bcc", ["Data-Centric Crystal Classifier", "Common Neighbor Analysis (Non-Diamond)", "Interval Common Neighbor Alaysis", "Ackland-Jones Analysis", "VoroTop Analysis"])
 # run_benchmark("al_fcc", ["Data-Centric Crystal Classifier", "Common Neighbor Analysis (Non-Diamond)", "Interval Common Neighbor Alaysis", "Ackland-Jones Analysis"])
+
+
 # exit()
 
 
-"""
 # Set "T/T_m" as the index column
-df = pd.read_csv("benchmarking/accuracies/data_new.csv", index_col="T/T_m")
+df = pd.read_csv("benchmarking/accuracies/ge_cd.csv", index_col="T/T_m")
 
 
 
@@ -88,4 +112,3 @@ plt.ylabel("Accuracy")
 plt.title("Accuracy vs T/T_m for Each Method")
 plt.legend()
 plt.show()
-"""
