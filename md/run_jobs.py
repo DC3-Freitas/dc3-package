@@ -23,22 +23,23 @@ runner_template = dedent("""\
                -var potentials_dir md/potentials
     """)
 
-selected_experiments = None
+if __name__ == '__main__':
+    selected_experiments = None
 
-if len(sys.argv) > 1:
-    selected_experiments = sys.argv[1:]
-    
-for exp_name in os.listdir("md/lammps_scripts"):
-    if selected_experiments and exp_name not in selected_experiments:
-        continue
-    for file_name in os.listdir(f"md/lammps_scripts/{exp_name}"):
-        file_path = f"md/lammps_scripts/{exp_name}/{file_name}"
-        runner_content = runner_template.format(file_name=file_name, file_path=file_path)
+    if len(sys.argv) > 1:
+        selected_experiments = sys.argv[1:]
+        
+    for exp_name in os.listdir("md/lammps_scripts"):
+        if selected_experiments and exp_name not in selected_experiments:
+            continue
+        for file_name in os.listdir(f"md/lammps_scripts/{exp_name}"):
+            file_path = f"md/lammps_scripts/{exp_name}/{file_name}"
+            runner_content = runner_template.format(file_name=file_name, file_path=file_path)
 
-        try:
-            result = subprocess.run(["sbatch"], input=runner_content, text=True, capture_output=True, check=True)
-            print(result.stdout)
+            try:
+                result = subprocess.run(["sbatch"], input=runner_content, text=True, capture_output=True, check=True)
+                print(result.stdout)
 
-        except subprocess.CalledProcessError as e:
-            print("Error submitting job:")
-            print(e.stderr)
+            except subprocess.CalledProcessError as e:
+                print("Error submitting job:")
+                print(e.stderr)
