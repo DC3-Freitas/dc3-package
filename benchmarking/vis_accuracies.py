@@ -9,6 +9,8 @@ if __name__ == '__main__':
         results = pd.read_csv(f"benchmarking/accuracies/{file_name}", index_col="T/T_m")
         benchmarking_results.append({"acc": results, "exp": file_name[: -4]})
     
+    # Plot
+    plt.style.use("bmh")
     fig, axs = plt.subplots(2, (len(benchmarking_results) + 1) // 2, figsize=(10, 10))
     axs = axs.flatten()
 
@@ -21,7 +23,7 @@ if __name__ == '__main__':
             axs[i].plot(x, y, label=col)
         
         axs[i].set_xlabel("T/T_m")
-        axs[i].set_ylabel("Accuraacy")
+        axs[i].set_ylabel("Accuracy")
 
         axs[i].legend()
         axs[i].set_title(info["exp"])

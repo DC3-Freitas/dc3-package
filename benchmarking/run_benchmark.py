@@ -85,30 +85,3 @@ if __name__ == '__main__':
 
         print(f"Running benchmark for {exp_name}")
         run_benchmark(exp_name, classifiers)
-
-    
-# run_benchmark("li_bcc", ["Data-Centric Crystal Classifier", "Common Neighbor Analysis (Non-Diamond)", "Interval Common Neighbor Alaysis", "Ackland-Jones Analysis", "VoroTop Analysis"])
-# run_benchmark("al_fcc", ["Data-Centric Crystal Classifier", "Common Neighbor Analysis (Non-Diamond)", "Interval Common Neighbor Alaysis", "Ackland-Jones Analysis"])
-
-
-# exit()
-
-
-# Set "T/T_m" as the index column
-df = pd.read_csv("benchmarking/accuracies/ge_cd.csv", index_col="T/T_m")
-
-
-
-
-# The index now represents the x-axis data
-x = df.index
-
-# Plot each method (each remaining column)
-for col in df.columns:
-    plt.plot(x, df[col], label=col)
-
-plt.xlabel("T/T_m")
-plt.ylabel("Accuracy")
-plt.title("Accuracy vs T/T_m for Each Method")
-plt.legend()
-plt.show()
