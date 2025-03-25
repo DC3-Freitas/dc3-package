@@ -7,7 +7,7 @@ import sys
 
 SIM_TEMPERATURE_FRACTIONS = np.round(np.arange(0.04, 1.60 + 0.04, 0.04), 6)
 
-res = np.load("res.npy", allow_pickle=True).item()
+res = np.load("benchmarking/old/res.npy", allow_pickle=True).item()
 plt.style.use("bmh")
 
 for exp_name in res:

@@ -1,4 +1,3 @@
-"""
 from ml.model import MLP_Model
 import torch
 import os
@@ -75,4 +74,3 @@ for exp_name in res:
 
 #plt.plot(SIM_TEMPERATURE_FRACTIONS, acc)
 plt.show()
-"""

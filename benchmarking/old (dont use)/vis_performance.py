@@ -7,7 +7,7 @@ import sys
 
 SIM_TEMPERATURE_FRACTIONS = np.round(np.arange(0.04, 1.60 + 0.04, 0.04), 6)
 
-res = np.load("res.npy", allow_pickle=True).item()
+res = np.load("benchmarking/old/res.npy", allow_pickle=True).item()
 
 # set up subplots
 fig, ax = plt.subplots(1, len(res), figsize=(10, 10))
