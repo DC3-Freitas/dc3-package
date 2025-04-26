@@ -1,40 +1,52 @@
 import numpy as np
 from ovito.data import NearestNeighborFinder
-from scipy.special import sph_harm
+from tqdm import tqdm
+from features.sop import precalculate_sop_norm_factors, calc_spherical_harmonics
+import numba as nb
 
-def coherence(data, l, N_neigh):
-    N_b = NearestNeighborFinder(N_neigh,data)
+
+@nb.njit
+def coherence_single_atom(l_list, unit_vecs, norm_factors):
+    # 1) Extract unit vectors and convert to spherical
+    x_coords, y_coords, z_coords = unit_vecs[:, 0], unit_vecs[:, 1], unit_vecs[:, 2]
+    thetas = np.arccos(z_coords)
+    phis = np.arctan2(y_coords, x_coords)
+
+    # 2) Calculate vectors
+    E_vec = np.zeros((np.sum(np.array(l_list) * 2 + 1)), dtype=np.complex128)
+    index = 0
+
+    for l in l_list:
+        all_sph_harmonics = calc_spherical_harmonics(l, thetas, phis, norm_factors)
+        E_vec[index : index + 2 * l + 1] += np.sum(all_sph_harmonics, axis=0) / len(unit_vecs)
+        index += 2 * l + 1
+
+    # 3) Normalize
+    E_vec /= np.linalg.norm(E_vec)
+    return E_vec
+
+
+def coherence(N_neigh, l_list, data):
+    # 1) Initialize variables 
+    finder = NearestNeighborFinder(N_neigh,data)
     num_atoms = data.particles.count
+    norm_factors = precalculate_sop_norm_factors(max(l_list))
 
+    E_vec = np.zeros((num_atoms, np.sum(np.array(l_list) * 2 + 1)), dtype=np.complex128)
     coh_fac = np.zeros(num_atoms)
 
-    E = np.zeros(num_atoms, sum(l+l+1)
-    
+    # 2) Calculate all vectors
+    for atom in tqdm(range(num_atoms)):
+        unit_vecs = np.array(
+            [neigh.delta / np.linalg.norm(neigh.delta) for neigh in finder.find(atom)]
+        )
+        E_vec[atom] = coherence_single_atom(l_list, unit_vecs, norm_factors)
+
+    # 3) Calculate coherence via dot products
     for atom in range(num_atoms):
-        for neighbor in N_b.find(atom):
-        
-            #angles in 3D space to find vector using spherical harmonics
-
-            phi = arctan2(neighbor.delta[1]/neighbor.delta[0])
-            theta = arccos(neighbor.delta[2]/neighbor.distance)
-
-            value = 0
-
-            for i in range(len(l)):
-                E[atom, value: value+2*l[i]+1] += sph_harm(range(-l[i],l[i]+1),l[i],phi,theta)
-
-                value += 2*l[i] + 1
-            
-        E[atom] /= N_neigh
-
-    #dot product between two atoms
-
-    for atom in range(num_atoms):
-        for neighbor in N_b.find.(atom):
-            E_i = E[atom]/norm(E[atom])
-            E_j = E[neighbor.index]/norm(E[neighbor.index])
-
-            coh_fac[atom] += dot(E_i,E_j)
+        for neighbor in finder.find(atom):
+            # Hermetian inner product
+            coh_fac[atom] += np.dot(E_vec[atom].conjugate(), E_vec[neighbor.index]).real
 
         coh_fac[atom] /= N_neigh
 
