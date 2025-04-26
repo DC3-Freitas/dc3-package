@@ -7,9 +7,11 @@ from constants import *
 
 
 @nb.njit
-def coherence_single_atom(l_list: list[int], unit_vecs: np.ndarray, norm_factors: np.ndarray) -> np.ndarray:
+def coherence_single_atom(
+    l_list: list[int], unit_vecs: np.ndarray, norm_factors: np.ndarray
+) -> np.ndarray:
     """
-    Calculates vector (Xi) used to calculate vector used for coherence 
+    Calculates vector (Xi) used to calculate vector used for coherence
     for a single atom.
 
     Args:
@@ -35,7 +37,9 @@ def coherence_single_atom(l_list: list[int], unit_vecs: np.ndarray, norm_factors
 
     for l in l_list:
         all_sph_harmonics = calc_spherical_harmonics(l, thetas, phis, norm_factors)
-        E_vec[index : index + 2 * l + 1] += np.sum(all_sph_harmonics, axis=0) / len(unit_vecs)
+        E_vec[index : index + 2 * l + 1] += np.sum(all_sph_harmonics, axis=0) / len(
+            unit_vecs
+        )
         index += 2 * l + 1
 
     # 3) Normalize
@@ -43,7 +47,9 @@ def coherence_single_atom(l_list: list[int], unit_vecs: np.ndarray, norm_factors
     return E_vec
 
 
-def calculate_all_coherence_values(n_b: int, l_list: list[int], data: DataCollection) -> np.ndarray:
+def calculate_all_coherence_values(
+    n_b: int, l_list: list[int], data: DataCollection
+) -> np.ndarray:
     """
     Calculates coherence parameter for each atom. The smaller it is,
     the more amorphous its arrangement of neighbors is.
@@ -56,7 +62,7 @@ def calculate_all_coherence_values(n_b: int, l_list: list[int], data: DataCollec
         Coherence parameter of each atom in the range [0, 1] with
         smaller values indicating a more amorphous arrangement of neighbors.
     """
-    # 1) Initialize variables 
+    # 1) Initialize variables
     finder = NearestNeighborFinder(n_b, data)
     num_atoms = data.particles.count
     norm_factors = precalculate_sop_norm_factors(max(l_list))
@@ -81,10 +87,13 @@ def calculate_all_coherence_values(n_b: int, l_list: list[int], data: DataCollec
 
     return coh_fac
 
+
 def calculate_amorphous(data: DataCollection) -> np.ndarray:
-    """
-    """
-    return calculate_all_coherence_values(N_B_COHERENCE, L_LIST_COHERENCE, data) >= ALPHA_CUTOFF
+    """ """
+    return (
+        calculate_all_coherence_values(N_B_COHERENCE, L_LIST_COHERENCE, data)
+        >= ALPHA_CUTOFF
+    )
 
 
 """

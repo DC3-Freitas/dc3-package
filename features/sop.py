@@ -7,6 +7,7 @@ import math
 
 # TODO: make docstrings consistent
 
+
 def precalculate_sop_norm_factors(max_l):
     """
     Calculates the following part of spherical harmonics:
@@ -26,8 +27,12 @@ def precalculate_sop_norm_factors(max_l):
         # As discussed below, we only need m >= 0
         for m in range(l + 1):
             # Accurately precalculate the terms here to avoid overflow
-            log_term = 0.5 * (math.log(2 * l + 1) - math.log(4 * math.pi) +
-                              math.lgamma(l - m + 1) - math.lgamma(l + m + 1))
+            log_term = 0.5 * (
+                math.log(2 * l + 1)
+                - math.log(4 * math.pi)
+                + math.lgamma(l - m + 1)
+                - math.lgamma(l + m + 1)
+            )
             norm_factors[l, m] = math.exp(log_term)
 
     return norm_factors
@@ -77,7 +82,7 @@ def calc_spherical_harmonics(l, thetas, phis, norm_factors):
 
     # 2a) Base cases
     x = np.cos(thetas)
-    
+
     plm[l] = (
         (1 if (l) % 2 == 0 else -1) * double_fact(2 * l - 1) * np.power(1 - x**2, l / 2)
     )
@@ -90,7 +95,7 @@ def calc_spherical_harmonics(l, thetas, phis, norm_factors):
             * double_fact(2 * l - 3)
             * np.power(1 - x**2, (l - 1) / 2)
         )
-    
+
     # 2b) Calculate rest of the terms
 
     # Importantly, we will run into issues when elements of x = +-1
@@ -100,13 +105,13 @@ def calc_spherical_harmonics(l, thetas, phis, norm_factors):
     mul_term = np.zeros_like(x)
     zero_mask = np.abs(x) == 1
     nonzero_mask = ~zero_mask
-    mul_term[nonzero_mask] = -2 * x[nonzero_mask] / np.sqrt(1 - x[nonzero_mask]**2)
+    mul_term[nonzero_mask] = -2 * x[nonzero_mask] / np.sqrt(1 - x[nonzero_mask] ** 2)
 
     for m in range(l - 2, -1, -1):
         r1 = mul_term * (m + 1) / ((l + m + 1) * (l - m)) * plm[m + 1]
         r2 = -1 / ((l + m + 1) * (l - m)) * plm[m + 2]
         plm[m] = r1 + r2
-    
+
     # Now if we consider x = +-1, all entries will be 0 except for m = 0
     # This is due to the closed form formula having (1 - x^2) term for all m != 0
     # It is also known that at m = 0 and x = +-1:
@@ -206,7 +211,7 @@ def calculate_all_sop(n_b_list, l_list, data):
     finder = NearestNeighborFinder(max(n_b_list), data)
 
     norm_factors = precalculate_sop_norm_factors(max(l_list))
-    
+
     # 2) Iterate over each atom and compute sop vector for it
     for atom in tqdm(range(num_atoms), desc="SOP: Calculating"):
         unit_vecs = np.array(

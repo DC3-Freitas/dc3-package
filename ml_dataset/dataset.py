@@ -7,6 +7,7 @@ import numpy as np
 import os
 from tqdm import tqdm
 
+
 class CrystalDataset(Dataset):
     def __init__(self, folder):
         print(f"Loading CrystalDataset from {folder}")
@@ -25,14 +26,16 @@ class CrystalDataset(Dataset):
                         if np.any(np.isnan(data)):
                             print(f"Skipping {f} due to NaN values")
                             continue
-                        
+
                         # Name should be in the form <strcture>_number.npy
                         label = structure_name
                         if label not in self.label_map:
                             self.label_map[label] = len(self.label_map)
 
                         self.data.append(data)
-                        self.labels += [self.label_map[label] for _ in range(data.shape[0])]
+                        self.labels += [
+                            self.label_map[label] for _ in range(data.shape[0])
+                        ]
 
         self.data = np.vstack(self.data)
         self.labels = np.array(self.labels)
@@ -41,10 +44,12 @@ class CrystalDataset(Dataset):
         self.means = np.mean(self.data, axis=0)
         self.stds = np.std(self.data, axis=0)
 
-        print(f"Loaded dataset with {len(self.label_map)} classes and {len(self.data)} samples")
-    
+        print(
+            f"Loaded dataset with {len(self.label_map)} classes and {len(self.data)} samples"
+        )
+
     def __len__(self):
         return len(self.data)
-    
+
     def __getitem__(self, idx):
         return self.data[idx], self.labels[idx]

@@ -6,12 +6,21 @@ from ovito.data import DataCollection
 from features.compute_all import compute_feature_vectors
 from outlier.coherence import calculate_amorphous
 
+
 class DC3:
-    def __init__(self, model_path: str, label_map: dict[str, int], ref_vec_path: str, delta_cutoff_path: str) -> None:
+    def __init__(
+        self,
+        model_path: str,
+        label_map: dict[str, int],
+        ref_vec_path: str,
+        delta_cutoff_path: str,
+    ) -> None:
         # Model
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = MLP_Model()
-        self.model.load_state_dict(torch.load(model_path, map_location=self.device, weights_only=True))
+        self.model.load_state_dict(
+            torch.load(model_path, map_location=self.device, weights_only=True)
+        )
         self.model.to(self.device)
         self.model.eval()
 
@@ -25,11 +34,11 @@ class DC3:
 
         # Reference vectors
         df = pd.read_csv(ref_vec_path)
-        self.ref_vecs = dict(zip(df['label'], df['cutoff']))
+        self.ref_vecs = dict(zip(df["label"], df["cutoff"]))
 
         # Delta cutoffs
         df = pd.read_csv(delta_cutoff_path)
-        self.delta_cutoffs = dict(zip(df['label'], df['cutoff']))
+        self.delta_cutoffs = dict(zip(df["label"], df["cutoff"]))
 
     def calculate(self, lattice: DataCollection) -> np.ndarray:
         features = compute_feature_vectors(lattice)
@@ -37,7 +46,7 @@ class DC3:
 
         with torch.no_grad():
             preds = self.model(features.to(self.device)).argmax(dim=1).cpu()
-        
+
         for i in range(len(features)):
             if not amorphous[i]:
                 ref_vec = self.ref_vecs[self.label_to_str[preds[i]]]
@@ -50,7 +59,3 @@ class DC3:
                     pass
             else:
                 pass
-        
-
-        
-         

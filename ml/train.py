@@ -13,7 +13,9 @@ exp_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 os.makedirs("ml/models", exist_ok=True)
 
 print("== MLP Training Script ==")
-print(f"Parameters: epochs={EPOCHS}, batch_size={BATCH_SIZE}, shuffle_dataset={SHUFFLE_DATASET}, train_val_split={TRAIN_VAL_SPLIT}")
+print(
+    f"Parameters: epochs={EPOCHS}, batch_size={BATCH_SIZE}, shuffle_dataset={SHUFFLE_DATASET}, train_val_split={TRAIN_VAL_SPLIT}"
+)
 
 # DATASET
 
@@ -28,17 +30,9 @@ split = int(np.floor(TRAIN_VAL_SPLIT * dataset_size))
 train_sampler = SubsetRandomSampler(indices[:split])
 val_sampler = SubsetRandomSampler(indices[split:])
 
-train_loader = DataLoader(
-    dataset,
-    batch_size=BATCH_SIZE,
-    sampler=train_sampler
-)
+train_loader = DataLoader(dataset, batch_size=BATCH_SIZE, sampler=train_sampler)
 
-val_loader = DataLoader(
-    dataset,
-    batch_size=BATCH_SIZE,
-    sampler=val_sampler
-)
+val_loader = DataLoader(dataset, batch_size=BATCH_SIZE, sampler=val_sampler)
 
 # MODEL
 
@@ -55,7 +49,7 @@ loss = nn.NLLLoss()
 
 # DEVICE
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 print(f"Using device: {device}")
 
@@ -78,7 +72,7 @@ for epoch in range(EPOCHS):
         l.backward()
         optim.step()
 
-        if i % 30 == 0: 
+        if i % 30 == 0:
             print(f"--> Batch {i}, Loss: {l.item()}")
 
     # Testing
@@ -94,7 +88,7 @@ for epoch in range(EPOCHS):
             _, predicted = torch.max(y_hat, 1)
             total += y.size(0)
             correct += (predicted == y).sum().item()
-        
+
         print(f"Epoch {epoch}, Validation Accuracy: {correct / total}")
 
         if correct / total > best_acc:

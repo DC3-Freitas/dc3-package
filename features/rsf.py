@@ -12,7 +12,7 @@ def calc_group_g(dists, avg, r_mults, sigma_mult):
     Args:
         dists (numpy array): Distances to each neighboring atom within r_cut
         avg (float): Average distance to the N_b neighboring atoms
-        r_mults (any iterable of ints): Values that we scale average r by for each atom to 
+        r_mults (any iterable of ints): Values that we scale average r by for each atom to
                                         use for the r and sigma values of G_{r,sigma}^{N_b}
         sigma_mult (float): Divide by this in exponent and used to determine r_cut
     Returns:
@@ -36,12 +36,12 @@ def calc_rsf_single_atom(r_avg, r_cuts, all_dists, r_mults, sigma_mult):
     Calculates RSF values for a single atom.
 
     Args:
-        r_avg (numpy array): Averages distances for each N_b in 
+        r_avg (numpy array): Averages distances for each N_b in
                              n_b_list (n_b_list defined in calculate_all_rsf)
         r_cuts (numpy array): Value of r_cut for each N_b
-        all_dists (SORTED iterable of ints): Sorted list of distances (within max r_cut) 
+        all_dists (SORTED iterable of ints): Sorted list of distances (within max r_cut)
                                              from the given atom
-        r_mults (any iterable of ints): Values that we scale average r by for each 
+        r_mults (any iterable of ints): Values that we scale average r by for each
                                         atom to use for the r and sigma values of G_{r,sigma}^{N_b}
         sigma_mult (float): Divide by this in exponent and used to determine r_cut
 

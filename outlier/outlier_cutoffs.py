@@ -10,7 +10,10 @@ from features.compute_all import compute_feature_vectors
 
 PERCENT_CUTOFF = 99
 
-def compute_ref_vec(ref_folder: str, means: np.ndarray, stds: np.ndarray) -> dict[str, np.ndarray]:
+
+def compute_ref_vec(
+    ref_folder: str, means: np.ndarray, stds: np.ndarray
+) -> dict[str, np.ndarray]:
     ref_vec = {}
 
     for f in tqdm(os.listdir(ref_folder)):
@@ -31,7 +34,9 @@ def compute_ref_vec(ref_folder: str, means: np.ndarray, stds: np.ndarray) -> dic
     return ref_vec
 
 
-def compute_delta_cutoff(synthetic_data_folder: str, ref_folder: str) -> dict[str, float]:
+def compute_delta_cutoff(
+    synthetic_data_folder: str, ref_folder: str
+) -> dict[str, float]:
     distances = {}
     all_data = []
     all_labels = []
@@ -46,18 +51,18 @@ def compute_delta_cutoff(synthetic_data_folder: str, ref_folder: str) -> dict[st
             if np.any(np.isnan(data)):
                 print(f"Skipping {f} due to NaN values")
                 continue
-            
+
             # Name should be in the form <strcture>_number.gz
             label = f.split("_")[0]
 
             # Add data
-            all_data.append(data)            
+            all_data.append(data)
             all_labels += [label] * data.shape[0]
-    
+
     # 2) Proccess data
     all_data = np.vstack(all_data)
     all_labels = np.array(all_labels)
-    
+
     means = np.mean(data, axis=0)
     stds = np.std(data, axis=0)
 
@@ -80,9 +85,9 @@ def compute_delta_cutoff(synthetic_data_folder: str, ref_folder: str) -> dict[st
     return distances
 
 
-def 
-
 if __name__ == "__main__":
-    delta_cutoffs = compute_delta_cutoff("ml_dataset/data", "lattice/lammps_lattices/data")
+    delta_cutoffs = compute_delta_cutoff(
+        "ml_dataset/data", "lattice/lammps_lattices/data"
+    )
     df = pd.DataFrame(delta_cutoffs.items(), columns=["label", "cutoff"])
     df.to_csv("delta_cutoffs.csv", index=False)
