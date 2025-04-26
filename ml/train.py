@@ -6,17 +6,11 @@ from ml_dataset.dataset import CrystalDataset
 import numpy as np
 from datetime import datetime
 import os
+from constants import *
 
 np.random.seed(42)
 exp_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 os.makedirs("ml/models", exist_ok=True)
-
-# HYPERPARAMETERS
-
-EPOCHS = 10
-BATCH_SIZE = 512
-SHUFFLE_DATASET = True
-TRAIN_VAL_SPLIT = 0.8
 
 print("== MLP Training Script ==")
 print(f"Parameters: epochs={EPOCHS}, batch_size={BATCH_SIZE}, shuffle_dataset={SHUFFLE_DATASET}, train_val_split={TRAIN_VAL_SPLIT}")

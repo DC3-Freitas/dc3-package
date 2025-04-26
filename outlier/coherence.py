@@ -3,11 +3,7 @@ from ovito.data import NearestNeighborFinder, DataCollection
 from tqdm import tqdm
 from features.sop import precalculate_sop_norm_factors, calc_spherical_harmonics
 import numba as nb
-
-
-ALPHA_CUTOFF = 0.196
-N_B_COHERENCE = 16
-L_LIST = [4, 6, 8, 12]
+from constants import *
 
 
 @nb.njit
@@ -88,7 +84,7 @@ def calculate_all_coherence_values(n_b: int, l_list: list[int], data: DataCollec
 def calculate_amorphous(data: DataCollection) -> np.ndarray:
     """
     """
-    return calculate_all_coherence_values(N_B_COHERENCE, L_LIST, data) >= ALPHA_CUTOFF
+    return calculate_all_coherence_values(N_B_COHERENCE, L_LIST_COHERENCE, data) >= ALPHA_CUTOFF
 
 
 """
