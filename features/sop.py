@@ -5,6 +5,8 @@ from tqdm import tqdm
 import math
 
 
+# TODO: make docstrings consistent
+
 def precalculate_sop_norm_factors(max_l):
     """
     Calculates the following part of spherical harmonics:

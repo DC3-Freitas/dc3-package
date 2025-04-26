@@ -1,7 +1,3 @@
-"""
-Pytorch training script for the MLP model
-"""
-
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, SubsetRandomSampler

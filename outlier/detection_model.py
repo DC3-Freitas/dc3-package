@@ -1,9 +1,9 @@
 import numpy as np 
 import torch
 
-from compute_all import compute_feature_vectors
-from coherence import coherence
-from model import MLP_Model
+from features.compute_all import compute_feature_vectors
+from coherence import calculate_all_coherence
+from ml.model import MLP_Model
 from synthetic_features import compute_ref_vectors, compute_delta_99
 
 # Import trained network
@@ -53,7 +53,7 @@ def predict_label(x_i, a, a_cut, delta_99, ref_vectors):
 def outlier_det(data, synthetic_data, l, N_neigh, a_cut):
 
     #coherence factor and feature vectors for all atoms. 
-  coh_fac = coherence(data, l, N_neigh)
+  coh_fac = calculate_all_coherence(data, l, N_neigh)
   feature_vectors = compute_feature_vectors(data, None)
   predicted_labels = []
 

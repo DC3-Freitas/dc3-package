@@ -10,9 +10,7 @@ SIGMA_MULT = 0.05
 
 def compute_feature_vectors(data, save_path=None):
     """
-    Computes feature vectors given data, normalizes so that
-    each component has mean 0 and std 1, and writes them
-    to path specified by save_path.
+    Computes feature vectors given data. Does not normalize.
 
     Args:
         data (OVITO data object): Information about all atoms.
