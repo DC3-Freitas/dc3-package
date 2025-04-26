@@ -4,7 +4,20 @@ from ovito.data import NearestNeighborFinder
 from tqdm import tqdm
 import math
 
+
 def precalculate_sop_norm_factors(max_l):
+    """
+    Calculates the following part of spherical harmonics:
+    sqrt[(2l + 1) / 4pi * (l - m)! / (l + m)!]
+    for all l and m up to the given max_l.
+
+    Args:
+        max_l (int): Maximum l value we will ever consider for
+                     use of the returned table
+    Returns:
+        Table where the entry at (l, m) represents the above equation
+        evaluated at the given l and m.
+    """
     norm_factors = np.zeros((max_l + 1, max_l + 1))
 
     for l in range(0, max_l + 1):
@@ -49,8 +62,8 @@ def calc_spherical_harmonics(l, thetas, phis, norm_factors):
         phis (numpy array of floats): Azimuthal angles
     Returns:
         2d numpy array sph_y where sph_y[i] stores the
-        spherical harmonic values for atom i for m=-l...+l
-        in that order.
+        spherical harmonic values for atom i (i-th neighbor) for
+        m=-l...+l in that order.
     """
     # 1) Variables (let first dimension be m -- we tranpose sph_y later)
     sph_y = np.zeros((l * 2 + 1, len(thetas)), dtype=np.complex128)
