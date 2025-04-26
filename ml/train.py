@@ -5,13 +5,15 @@ from ml.model import MLP_Model
 from ml_dataset.dataset import CrystalDataset
 import numpy as np
 from datetime import datetime
+import os
 
 np.random.seed(42)
 exp_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+os.makedirs("ml/models", exist_ok=True)
 
 # HYPERPARAMETERS
 
-EPOCHS = 100
+EPOCHS = 10
 BATCH_SIZE = 512
 SHUFFLE_DATASET = True
 TRAIN_VAL_SPLIT = 0.8

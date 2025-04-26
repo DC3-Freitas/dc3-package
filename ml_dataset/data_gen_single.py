@@ -29,7 +29,7 @@ def create(structure_name, fname, alpha):
 
     data = compute_feature_vectors(generator.generate(alpha), None)
     os.makedirs(f"ml_dataset/data/{structure_name}", exist_ok=True)
-    np.savetxt(f"ml_dataset/data/{structure_name}/{alpha:.3f}.gz", data)
+    np.save(f"ml_dataset/data/{structure_name}/{alpha:.3f}.npy", data)
 
 if __name__ == "__main__":
     create(sys.argv[1], sys.argv[2], np.linspace(0.01, 0.25, 10)[int(sys.argv[3])])
