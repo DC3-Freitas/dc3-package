@@ -7,8 +7,8 @@ name = "DC3"
 version = "1.0"
 description = "DC3 structure classification package for OVITO"
 keywords = ["ovito", "dc3", "structure classification"]
-authors = [{name = "Jieruei Chang", email = "jieruei@mit.edu"}, {name = "Alex Liang", email = "acliang@mit.edu"}]
-maintainers = [{name = "Jieruei Chang", email = "jieruei@mit.edu"}, {name = "Alex Liang", email = "acliang@mit.edu"}]
+authors = [{name = "Jieruei Chang", email = "jieruei@mit.edu"}, {name = "Alexander Liang", email = "acliang@mit.edu"}]
+maintainers = [{name = "Jieruei Chang", email = "jieruei@mit.edu"}, {name = "Alexander Liang", email = "acliang@mit.edu"}]
 license = {text = "MIT License"}
 readme = "README.md"
 requires-python = ">=3.7"
