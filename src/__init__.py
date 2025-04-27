@@ -1,13 +1,18 @@
 from ovito.data import DataCollection
 from ovito.pipeline import ModifierInterface
 from dc3 import DC3
-
+from traits.api import *
 
 class DC3Modifier(ModifierInterface):
     """
     DC3Modifier is a custom modifier for the OVITO pipeline that uses the DC3 model to classify crystal structures.
     It modifies the data collection in place based on the classification results.
     """
+
+    model_path = Str()
+    label_map = Dict(Str, Int)
+    ref_vec_path = Str()
+    delta_cutoff_path = Str()
 
     def __init__(
         self,
@@ -26,7 +31,8 @@ class DC3Modifier(ModifierInterface):
             delta_cutoff_path (str): Path to the delta cutoffs CSV file.
         """
         # need to figure out how this works with the pipeline
-        self.dc3 = DC3(model_path, label_map, ref_vec_path, delta_cutoff_path)
+        print("Initializing DC3Modifier")
+        self.dc3 = DC3(self.model_path, self.label_map, self.ref_vec_path, self.delta_cutoff_path)
 
     def modify(self, data: DataCollection, frame: int, **kwargs):
         """
@@ -39,4 +45,7 @@ class DC3Modifier(ModifierInterface):
             **kwargs: Additional keyword arguments.
         """
         # need to research how kwargs works in the pipeline
-        self.dc3.calculate(data)
+        print("Reinitializing DC3Modifier")
+        self.dc3 = DC3(model_path, label_map, ref_vec_path, delta_cutoff_path)
+        print("Calculating structure types")
+        data.particles_.create_property('Structure_Type', data=self.dc3.calculate(data))

@@ -59,16 +59,17 @@ class DC3:
         
         return results
 
+if __name__ == "__main__":
+    # Example usage
+    tester = DC3("ml/models/model_2025-04-26_23-04-46.pt", 
+                 {"bcc": 0, "cd": 1, "fcc": 2, "hcp": 3, "hd": 4, "sc": 5}, 
+                 "lattice/features", "ml_dataset/features")
 
-tester = DC3("ml/models/model_2025-04-26_23-04-46.pt", 
-             {"bcc": 0, "cd": 1, "fcc": 2, "hcp": 3, "hd": 4, "sc": 5}, 
-             "lattice/features", "ml_dataset/features")
+    print("Done initializing")
 
-print("Done initializing")
-
-import ovito
-pipeline = ovito.io.import_file("dump_1.44_relaxed.gz") # mg hcp
-lattice = pipeline.compute(0)
-# calculate_amorphous(lattice)
-# tester.calculate(lattice)
-print(tester.calculate(lattice))
+    import ovito
+    pipeline = ovito.io.import_file("dump_1.44_relaxed.gz") # mg hcp
+    lattice = pipeline.compute(0)
+    # calculate_amorphous(lattice)
+    # tester.calculate(lattice)
+    print(tester.calculate(lattice))
