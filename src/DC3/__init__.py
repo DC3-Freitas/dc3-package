@@ -16,11 +16,7 @@ class DC3Modifier(ModifierInterface):
     delta_cutoff_path = Str()
 
     def __init__(
-        self,
-        model_path: str,
-        label_map: dict[str, int],
-        ref_vec_path: str,
-        delta_cutoff_path: str,
+        self
     ):
         """
         Initialize the DC3Modifier with the model path and label mapping.
