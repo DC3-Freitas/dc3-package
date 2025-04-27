@@ -2,13 +2,10 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 import os
-
+from constants import *
 
 import ovito
 from features.compute_all import compute_feature_vectors
-
-
-PERCENT_CUTOFF = 99
 
 
 def compute_ref_vec(
