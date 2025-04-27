@@ -2,7 +2,7 @@ import torch
 import numpy as np
 from ml.model import MLP_Model
 from ovito.data import DataCollection
-from features.compute_all import compute_feature_vectors
+from compute_features.compute_all import compute_feature_vectors
 from outlier.coherence import calculate_amorphous
 from outlier.outlier_cutoffs import compute_ref_vec, compute_delta_cutoff
 
