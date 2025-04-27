@@ -5,7 +5,7 @@ from compute_features.rsf import calculate_all_rsf
 from constants import *
 
 
-def compute_feature_vectors(data: DataCollection):
+def compute_feature_vectors(data: DataCollection) -> np.ndarray:
     """
     Computes feature vectors given data. Does not normalize.
 
