@@ -45,7 +45,7 @@ def compute_delta_cutoff(
                     if not structure_name in distances:
                         distances[structure_name] = []
 
-                    distances[structure_name].extend(np.linalg.norm(normalized_data - ref_vecs[structure_name], axis=0).tolist())
+                    distances[structure_name].extend(np.linalg.norm(normalized_data - ref_vecs[structure_name], axis=1).tolist())
 
     # Calculate 99-th percentile
     for label in distances.keys():

@@ -71,7 +71,7 @@ def calculate_all_coherence_values(
     coh_fac = np.zeros(num_atoms)
 
     # 2) Calculate all vectors
-    for atom in tqdm(range(num_atoms), desc="Coherence: Calculating Vectors"):
+    for atom in tqdm(range(num_atoms), desc="Coherence: Vectors"):
         unit_vecs = np.array(
             [neigh.delta / np.linalg.norm(neigh.delta) for neigh in finder.find(atom)]
         )
@@ -85,7 +85,6 @@ def calculate_all_coherence_values(
 
         coh_fac[atom] /= n_b
 
-    print(coh_fac)
     return coh_fac
 
 

@@ -67,7 +67,8 @@ tester = DC3("ml/models/model_2025-04-26_23-04-46.pt",
 print("Done initializing")
 
 import ovito
-pipeline = ovito.io.import_file("dump_0.96_relaxed.gz") # mg hcp
+pipeline = ovito.io.import_file("dump_1.44_relaxed.gz") # mg hcp
 lattice = pipeline.compute(0)
 # calculate_amorphous(lattice)
+# tester.calculate(lattice)
 print(tester.calculate(lattice))
