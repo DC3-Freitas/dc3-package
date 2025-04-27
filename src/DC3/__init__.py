@@ -48,4 +48,6 @@ class DC3Modifier(ModifierInterface):
         # self.dc3 = DC3(model_path, label_map, ref_vec_path, delta_cutoff_path)
         self.dc3 = DC3(self.model_path, self.label_map, self.ref_vec_path, self.delta_cutoff_path)
         print("Calculating structure types")
-        data.particles_.create_property("Structure_Type", data=self.dc3.calculate(data))
+        result = self.dc3.calculate(data)
+        result_converted = [self.label_map[i] for i in result]
+        data.particles_.create_property("Structure_Type", data=result_converted)
