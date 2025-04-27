@@ -6,7 +6,7 @@ from DC3.ml_dataset.dataset import CrystalDataset
 import numpy as np
 from datetime import datetime
 import os
-from constants import *
+from DC3.constants import *
 
 np.random.seed(42)
 

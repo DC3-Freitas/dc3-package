@@ -2,7 +2,7 @@ import numpy as np
 from ovito.data import DataCollection
 from DC3.compute_features.sop import calculate_all_sop
 from DC3.compute_features.rsf import calculate_all_rsf
-from constants import *
+from DC3.constants import *
 
 
 def compute_feature_vectors(data: DataCollection) -> np.ndarray:

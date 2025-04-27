@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 import os
-from constants import *
+from DC3.constants import *
 
 
 def compute_ref_vec(

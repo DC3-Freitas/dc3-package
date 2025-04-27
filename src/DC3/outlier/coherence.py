@@ -6,7 +6,7 @@ from DC3.compute_features.spherical_harmonics import (
     calc_spherical_harmonics,
 )
 import numba as nb
-from constants import *
+from DC3.constants import *
 
 
 @nb.njit
