@@ -1,4 +1,4 @@
-from features.compute_all import compute_feature_vectors
+from compute_features.compute_all import compute_feature_vectors
 from ovito.io import import_file
 import numpy as np
 import os

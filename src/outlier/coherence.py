@@ -1,7 +1,7 @@
 import numpy as np
 from ovito.data import NearestNeighborFinder, DataCollection
 from tqdm import tqdm
-from features.sop import precalculate_sop_norm_factors, calc_spherical_harmonics
+from compute_features.sop import precalculate_sop_norm_factors, calc_spherical_harmonics
 import numba as nb
 from constants import *
 

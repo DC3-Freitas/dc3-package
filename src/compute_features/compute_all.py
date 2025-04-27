@@ -1,6 +1,6 @@
 import numpy as np
-from features.sop import calculate_all_sop
-from features.rsf import calculate_all_rsf
+from compute_features.sop import calculate_all_sop
+from compute_features.rsf import calculate_all_rsf
 from constants import *
 
 
