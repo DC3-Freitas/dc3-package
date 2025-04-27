@@ -1,22 +1,24 @@
 import numpy as np
 import numba as nb
-from ovito.data import NearestNeighborFinder, CutoffNeighborFinder
+from ovito.data import NearestNeighborFinder, CutoffNeighborFinder, DataCollection
 from tqdm import tqdm
 
 
 @nb.njit
-def calc_group_g(dists, avg, r_mults, sigma_mult):
+def calc_group_g(
+    dists: np.ndarray, avg: float, r_mults: list[float], sigma_mult: float
+) -> np.ndarray:
     """
     Calculates RSF over various r_mults for a single atom.
 
     Args:
-        dists (numpy array): Distances to each neighboring atom within r_cut
-        avg (float): Average distance to the N_b neighboring atoms
-        r_mults (any iterable of ints): Values that we scale average r by for each atom to
-                                        use for the r and sigma values of G_{r,sigma}^{N_b}
-        sigma_mult (float): Divide by this in exponent and used to determine r_cut
+        dists: distances to each neighboring atom within r_cut
+        avg: average distance to the N_b neighboring atoms
+        r_mults: values that we scale average r by for each atom to
+                 use for the r and sigma values of G_{r,sigma}^{N_b}
+        sigma_mult: divide by this in exponent and used to determine r_cut
     Returns:
-        A numpy array storing RSF for the r_mults
+        A numpy array storing RSF for the r_mults.
     """
     fvec = np.zeros(len(r_mults))
 
@@ -31,22 +33,27 @@ def calc_group_g(dists, avg, r_mults, sigma_mult):
 
 
 @nb.njit
-def calc_rsf_single_atom(r_avg, r_cuts, all_dists, r_mults, sigma_mult):
+def calc_rsf_single_atom(
+    r_avg: np.ndarray,
+    r_cuts: np.ndarray,
+    all_dists: list[int],
+    r_mults: list[float],
+    sigma_mult: float,
+) -> np.ndarray:
     """
     Calculates RSF values for a single atom.
 
     Args:
-        r_avg (numpy array): Averages distances for each N_b in
-                             n_b_list (n_b_list defined in calculate_all_rsf)
-        r_cuts (numpy array): Value of r_cut for each N_b
-        all_dists (SORTED iterable of ints): Sorted list of distances (within max r_cut)
-                                             from the given atom
-        r_mults (any iterable of ints): Values that we scale average r by for each
-                                        atom to use for the r and sigma values of G_{r,sigma}^{N_b}
-        sigma_mult (float): Divide by this in exponent and used to determine r_cut
+        r_avg: averages distances for each N_b in
+               n_b_list (n_b_list defined in calculate_all_rsf)
+        r_cuts: value of r_cut for each N_b
+        all_dists: sorted list of distances (within max r_cut) from the given atom
+        r_mults: values that we scale average r by for each
+                 atom to use for the r and sigma values of G_{r,sigma}^{N_b}
+        sigma_mult: divide by this in exponent and used to determine r_cut
 
     Returns:
-        A numpy array storing RSF for the given atom
+        A numpy array storing RSF for the given atom.
     """
     fvec = np.zeros(len(r_avg) * len(r_mults))
     dists = []
@@ -71,7 +78,9 @@ def calc_rsf_single_atom(r_avg, r_cuts, all_dists, r_mults, sigma_mult):
     return fvec
 
 
-def calculate_all_rsf(n_b_list, r_mults, sigma_mult, data):
+def calculate_all_rsf(
+    n_b_list: list[int], r_mults: list[float], sigma_mult: float, data: DataCollection
+) -> np.ndarray:
     """
     Calculates the RSF based feature vector portion. The feature
     vector portion consists of a collection of G^{N_b}_{r,sigma} over
@@ -81,11 +90,11 @@ def calculate_all_rsf(n_b_list, r_mults, sigma_mult, data):
     Make sure that the number of atoms is at least max(n_b_list).
 
     Args:
-        n_b_list (any SORTED iterable of ints): Values of N_b.
-        r_mults (any iterable of ints): Values that we scale average r by for each atom to use
-                                        for the r and sigma values of G_{r,sigma}^{N_b}.
-        sigma_mult (float): Divide by this in exponent and used to determine r_cut
-        data (OVITO data object): Information about all atoms.
+        n_b_list: values of N_b, must be sorted
+        r_mults: values that we scale average r by for each atom to use
+                 for the r and sigma values of G_{r,sigma}^{N_b}.
+        sigma_mult: divide by this in exponent and used to determine r_cut
+        data: information about all atoms.
 
     Returns:
         A numpy 2d array storing the RSF part of the feature vectors.

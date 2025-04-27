@@ -27,7 +27,7 @@ def create(structure_name, fname, alpha):
     generator = LatticeGenerator()
     generator.load_lammps(fname)
 
-    data = compute_feature_vectors(generator.generate(alpha), None)
+    data = compute_feature_vectors(generator.generate(alpha))
     os.makedirs(f"ml_dataset/data/{structure_name}", exist_ok=True)
     np.save(f"ml_dataset/data/{structure_name}/{alpha:.3f}.npy", data)
 
