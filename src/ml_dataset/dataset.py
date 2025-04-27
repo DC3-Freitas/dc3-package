@@ -6,7 +6,7 @@ from torch.utils.data import Dataset
 import numpy as np
 import os
 from tqdm import tqdm
-
+import json
 
 class CrystalDataset(Dataset):
     def __init__(self, folder):
@@ -43,6 +43,11 @@ class CrystalDataset(Dataset):
         # Normalization parameters (normalize inside the model instead)
         self.means = np.mean(self.data, axis=0)
         self.stds = np.std(self.data, axis=0)
+
+        # Save label map
+        label_map_path = "src/ml_dataset/label_map.json"
+        with open(label_map_path, "w") as f:
+            json.dump(self.label_map, f)
 
         print(
             f"Loaded dataset with {len(self.label_map)} classes and {len(self.data)} samples"
