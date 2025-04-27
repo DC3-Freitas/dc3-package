@@ -1,7 +1,10 @@
 import numpy as np
 from ovito.data import NearestNeighborFinder, DataCollection
 from tqdm import tqdm
-from compute_features.spherical_harmonics import precalculate_sop_norm_factors, calc_spherical_harmonics
+from DC3.compute_features.spherical_harmonics import (
+    precalculate_sop_norm_factors,
+    calc_spherical_harmonics,
+)
 import numba as nb
 from constants import *
 
@@ -90,7 +93,7 @@ def calculate_all_coherence_values(
 
 def calculate_amorphous(data: DataCollection) -> np.ndarray:
     """
-    TODO 
+    TODO
     """
     return (
         calculate_all_coherence_values(N_B_COHERENCE, L_LIST_COHERENCE, data)

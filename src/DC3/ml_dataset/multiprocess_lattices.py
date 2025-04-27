@@ -2,7 +2,7 @@ import numpy as np
 import os
 import multiprocessing
 from concurrent.futures import ProcessPoolExecutor
-from ml_dataset.data_gen_single import create
+from DC3.ml_dataset.data_gen_single import create
 
 
 def run_sim(data):

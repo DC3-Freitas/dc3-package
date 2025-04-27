@@ -14,7 +14,11 @@ readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
    "ovito >= 3.9.1",
-   "numpy >= 1.21.0"
+   "numba==0.60.0",
+   "numpy==1.26.0",
+   "torch==2.5.1",
+   "tqdm==4.67.0",
+   "pandas==2.2.3"
 ]
 
 [project.urls]

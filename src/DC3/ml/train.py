@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, SubsetRandomSampler
-from ml.model import MLP_Model
-from ml_dataset.dataset import CrystalDataset
+from DC3.ml.model import MLP_Model
+from DC3.ml_dataset.dataset import CrystalDataset
 import numpy as np
 from datetime import datetime
 import os

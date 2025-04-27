@@ -1,7 +1,7 @@
 import numpy as np
 from ovito.data import DataCollection
-from compute_features.sop import calculate_all_sop
-from compute_features.rsf import calculate_all_rsf
+from DC3.compute_features.sop import calculate_all_sop
+from DC3.compute_features.rsf import calculate_all_rsf
 from constants import *
 
 

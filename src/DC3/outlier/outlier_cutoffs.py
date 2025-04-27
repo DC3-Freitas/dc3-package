@@ -26,10 +26,12 @@ def compute_ref_vec(
 
 
 def compute_delta_cutoff(
-    synthetic_data_folder: str, ref_vecs: dict[str, np.ndarray], means: np.ndarray, stds: np.ndarray
+    synthetic_data_folder: str,
+    ref_vecs: dict[str, np.ndarray],
+    means: np.ndarray,
+    stds: np.ndarray,
 ) -> dict[str, float]:
-    """
-    """
+    """ """
 
     # Get distances
     distances = {}
@@ -38,14 +40,20 @@ def compute_delta_cutoff(
         if os.path.isdir(os.path.join(synthetic_data_folder, structure_name)):
             for f in os.listdir(os.path.join(synthetic_data_folder, structure_name)):
                 if f.endswith(".npy"):
-                    data = np.load(os.path.join(synthetic_data_folder, structure_name, f))
+                    data = np.load(
+                        os.path.join(synthetic_data_folder, structure_name, f)
+                    )
                     normalized_data = (data - means) / (stds + 1e-6)
 
                     # Add to distances
                     if not structure_name in distances:
                         distances[structure_name] = []
 
-                    distances[structure_name].extend(np.linalg.norm(normalized_data - ref_vecs[structure_name], axis=1).tolist())
+                    distances[structure_name].extend(
+                        np.linalg.norm(
+                            normalized_data - ref_vecs[structure_name], axis=1
+                        ).tolist()
+                    )
 
     # Calculate 99-th percentile
     for label in distances.keys():

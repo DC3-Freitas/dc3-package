@@ -1,10 +1,11 @@
 import torch
 import numpy as np
-from ml.model import MLP_Model
+from DC3.ml.model import MLP_Model
 from ovito.data import DataCollection
-from compute_features.compute_all import compute_feature_vectors
-from outlier.coherence import calculate_amorphous
-from outlier.outlier_cutoffs import compute_ref_vec, compute_delta_cutoff
+from DC3.compute_features.compute_all import compute_feature_vectors
+from DC3.outlier.coherence import calculate_amorphous
+from DC3.outlier.outlier_cutoffs import compute_ref_vec, compute_delta_cutoff
+
 
 class DC3:
     def __init__(
@@ -33,8 +34,9 @@ class DC3:
 
         # Reference vectors and delta cutoffs
         self.ref_vecs = compute_ref_vec(ref_vec_folder, self.means, self.stds)
-        self.delta_cutoffs = compute_delta_cutoff(synthetic_data_folder, self.ref_vecs, self.means, self.stds)
-
+        self.delta_cutoffs = compute_delta_cutoff(
+            synthetic_data_folder, self.ref_vecs, self.means, self.stds
+        )
 
     def calculate(self, lattice: DataCollection) -> np.ndarray:
         features = compute_feature_vectors(lattice)
@@ -42,7 +44,12 @@ class DC3:
         results = []
 
         with torch.no_grad():
-            preds = self.model(torch.from_numpy(features).float().to(self.device)).argmax(dim=1).cpu().numpy()
+            preds = (
+                self.model(torch.from_numpy(features).float().to(self.device))
+                .argmax(dim=1)
+                .cpu()
+                .numpy()
+            )
 
         for i in range(len(features)):
             if not amorphous[i]:
@@ -56,19 +63,24 @@ class DC3:
                     results.append(self.label_int_to_str[preds[i]])
             else:
                 results.append("amorphous")
-        
+
         return results
+
 
 if __name__ == "__main__":
     # Example usage
-    tester = DC3("ml/models/model_2025-04-26_23-04-46.pt", 
-                 {"bcc": 0, "cd": 1, "fcc": 2, "hcp": 3, "hd": 4, "sc": 5}, 
-                 "lattice/features", "ml_dataset/features")
+    tester = DC3(
+        "ml/models/model_2025-04-26_23-04-46.pt",
+        {"bcc": 0, "cd": 1, "fcc": 2, "hcp": 3, "hd": 4, "sc": 5},
+        "lattice/features",
+        "ml_dataset/features",
+    )
 
     print("Done initializing")
 
     import ovito
-    pipeline = ovito.io.import_file("dump_1.44_relaxed.gz") # mg hcp
+
+    pipeline = ovito.io.import_file("dump_1.44_relaxed.gz")  # mg hcp
     lattice = pipeline.compute(0)
     # calculate_amorphous(lattice)
     # tester.calculate(lattice)

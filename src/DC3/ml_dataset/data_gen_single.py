@@ -2,8 +2,8 @@
 Strings together `lattice` and `features` to create synthetic data
 """
 
-from lattice.gen import LatticeGenerator
-from compute_features.compute_all import compute_feature_vectors
+from DC3.lattice.gen import LatticeGenerator
+from DC3.compute_features.compute_all import compute_feature_vectors
 import numpy as np
 import sys
 import os

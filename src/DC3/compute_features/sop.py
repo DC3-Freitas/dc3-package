@@ -2,7 +2,7 @@ import numpy as np
 import numba as nb
 from ovito.data import NearestNeighborFinder, DataCollection
 from tqdm import tqdm
-from compute_features.spherical_harmonics import (
+from DC3.compute_features.spherical_harmonics import (
     precalculate_sop_norm_factors,
     calc_spherical_harmonics,
 )

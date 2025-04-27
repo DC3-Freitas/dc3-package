@@ -8,6 +8,7 @@ import os
 from tqdm import tqdm
 import json
 
+
 class CrystalDataset(Dataset):
     def __init__(self, folder):
         print(f"Loading CrystalDataset from {folder}")
