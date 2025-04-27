@@ -89,19 +89,10 @@ def calculate_all_coherence_values(
 
 
 def calculate_amorphous(data: DataCollection) -> np.ndarray:
-    """ """
+    """
+    TODO 
+    """
     return (
         calculate_all_coherence_values(N_B_COHERENCE, L_LIST_COHERENCE, data)
         >= ALPHA_CUTOFF
     )
-
-
-"""
-import ovito
-pipeline = ovito.io.import_file("md/data/al_fcc/dump_1.52_relaxed.gz")
-lattice = pipeline.compute(0)
-values = calculate_all_coherence(16, [4, 6, 8, 12], lattice)
-
-
-np.savetxt("coherence_new.txt", values)
-"""

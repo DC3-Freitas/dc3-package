@@ -4,78 +4,50 @@ from tqdm import tqdm
 import os
 from constants import *
 
-import ovito
-from features.compute_all import compute_feature_vectors
-
 
 def compute_ref_vec(
     ref_folder: str, means: np.ndarray, stds: np.ndarray
 ) -> dict[str, np.ndarray]:
+    """
+    TODO
+    """
     ref_vec = {}
 
     for f in tqdm(os.listdir(ref_folder)):
-        if f.endswith(".gz"):
+        if f.endswith(".npy"):
+            # Load and normalize
+            data = np.load(os.path.join(ref_folder, f))
+            normalized_data = (data - means) / (stds + 1e-6)
 
-            pipeline = ovito.io.import_file(os.path.join(ref_folder, f))
-            lattice = pipeline.compute(0)
-
-            # Normalized target vector
-            data = compute_feature_vectors(lattice)
-            data = (data - means) / (stds + 1e-6)
-
-            # Name should be in the form <strcture>_number.gz
-            label = f.split(".")[0]
-
-            ref_vec[label] = data.mean(axis=0)
+            # Name should be in the form <strcture>.npy
+            ref_vec[f.split(".")[0]] = normalized_data.mean(axis=0)
 
     return ref_vec
 
 
 def compute_delta_cutoff(
-    synthetic_data_folder: str, ref_folder: str
+    synthetic_data_folder: str, ref_vecs: dict[str, np.ndarray], means: np.ndarray, stds: np.ndarray
 ) -> dict[str, float]:
+    """
+    """
+
+    # Get distances
     distances = {}
-    all_data = []
-    all_labels = []
 
-    # 1) Get data
-    for f in tqdm(os.listdir(synthetic_data_folder)):
-        if f.endswith(".gz"):
-            # All the vectors
-            data = np.loadtxt(os.path.join(synthetic_data_folder, f))
+    for structure_name in tqdm(os.listdir(synthetic_data_folder)):
+        if os.path.isdir(os.path.join(synthetic_data_folder, structure_name)):
+            for f in tqdm(os.listdir(os.path.join(synthetic_data_folder, structure_name))):
+                if f.endswith(".npy"):
+                    data = np.load(os.path.join(synthetic_data_folder, structure_name, f))
+                    normalized_data = (data - means) / (stds + 1e-6)
 
-            # Check data integrity
-            if np.any(np.isnan(data)):
-                print(f"Skipping {f} due to NaN values")
-                continue
+                    # Add to distances
+                    if not label in distances:
+                        distances[label] = []
 
-            # Name should be in the form <strcture>_number.gz
-            label = f.split("_")[0]
+                    distances[label].extend(np.linalg.norm(normalized_data - ref_vecs[label], axis=0).tolist())
 
-            # Add data
-            all_data.append(data)
-            all_labels += [label] * data.shape[0]
-
-    # 2) Proccess data
-    all_data = np.vstack(all_data)
-    all_labels = np.array(all_labels)
-
-    means = np.mean(data, axis=0)
-    stds = np.std(data, axis=0)
-
-    # 3) Compute
-    ref_vec = compute_ref_vec(ref_folder, means, stds)
-
-    for data, label in zip(all_data, all_labels):
-        normalized_data = (data - means) / (stds + 1e-6)
-
-        # Add to distances
-        if not label in distances:
-            distances[label] = []
-
-        distances[label].append(np.linalg.norm(normalized_data - ref_vec[label]))
-
-    # 4) Cutoff
+    # Calculate 99-th percentile
     for label in distances.keys():
         distances[label] = np.percentile(np.array(distances[label]), PERCENT_CUTOFF)
 
