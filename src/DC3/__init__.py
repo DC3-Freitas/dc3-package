@@ -32,6 +32,8 @@ class DC3Modifier(ModifierInterface):
             delta_cutoff_path (str): Path to the delta cutoffs CSV file.
         """
         # need to figure out how this works with the pipeline
+        if not model_path:
+            model_path = "ml/models/model_2025-04-26_23-04-46.pt"
         print("Initializing DC3Modifier")
         self.dc3 = DC3(
             self.model_path, self.label_map, self.ref_vec_path, self.delta_cutoff_path
