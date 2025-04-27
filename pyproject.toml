@@ -18,7 +18,8 @@ dependencies = [
    "numba",
    "torch >= 2.5.1",
    "tqdm >= 4.67.0",
-   "pandas >= 2.2.3"
+   "pandas >= 2.2.3",
+   "scipy >= 0.16.0"
 ]
 
 [project.urls]

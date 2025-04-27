@@ -26,12 +26,12 @@ class DC3Modifier(ModifierInterface):
             delta_cutoff_path (str): Path to the delta cutoffs CSV file.
         """
         # need to figure out how this works with the pipeline
-        if not self.model_path:
-            self.model_path = "ml/models/model_2025-04-26_23-04-46.pt"
-        print("Initializing DC3Modifier")
-        self.dc3 = DC3(
-            self.model_path, self.label_map, self.ref_vec_path, self.delta_cutoff_path
-        )
+        # if not self.model_path:
+        #     self.model_path = "ml\models\model_2025-04-26_19-26-39.pt"
+        # print("Initializing DC3Modifier")
+        # self.dc3 = DC3(
+        #     self.model_path, self.label_map, self.ref_vec_path, self.delta_cutoff_path
+        # )
 
     def modify(self, data: DataCollection, frame: int, **kwargs):
         """
@@ -46,5 +46,6 @@ class DC3Modifier(ModifierInterface):
         # need to research how kwargs works in the pipeline
         # print("Reinitializing DC3Modifier")
         # self.dc3 = DC3(model_path, label_map, ref_vec_path, delta_cutoff_path)
+        self.dc3 = DC3(self.model_path, self.label_map, self.ref_vec_path, self.delta_cutoff_path)
         print("Calculating structure types")
         data.particles_.create_property("Structure_Type", data=self.dc3.calculate(data))
