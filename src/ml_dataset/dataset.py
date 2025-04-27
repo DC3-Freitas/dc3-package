@@ -45,7 +45,7 @@ class CrystalDataset(Dataset):
         self.stds = np.std(self.data, axis=0)
 
         # Save label map
-        label_map_path = "src/ml_dataset/label_map.json"
+        label_map_path = "ml_dataset/label_map.json"
         with open(label_map_path, "w") as f:
             json.dump(self.label_map, f)
 

@@ -35,7 +35,7 @@ def train(
 
     # DATASET
 
-    dataset = CrystalDataset("ml_dataset/data")
+    dataset = CrystalDataset("ml_dataset/features")
     dataset_size = len(dataset)
 
     if shuffle_dataset:
