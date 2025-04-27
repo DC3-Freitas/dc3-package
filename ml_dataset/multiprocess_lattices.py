@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     for struct in structs:
         for temp in temps:
-            runs.append((struct, f"lattice/lammps_lattices/data/{struct}.gz", temp))
+            runs.append((struct, f"lattice/md_results/{struct}.gz", temp))
 
     num_workers = min(
         int(os.getenv("SLURM_CPUS_ON_NODE", multiprocessing.cpu_count())), len(runs)

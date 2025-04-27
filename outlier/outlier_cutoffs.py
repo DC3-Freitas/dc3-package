@@ -84,7 +84,7 @@ def compute_delta_cutoff(
 
 if __name__ == "__main__":
     delta_cutoffs = compute_delta_cutoff(
-        "ml_dataset/data", "lattice/lammps_lattices/data"
+        "ml_dataset/data", "lattice/data"
     )
     df = pd.DataFrame(delta_cutoffs.items(), columns=["label", "cutoff"])
     df.to_csv("delta_cutoffs.csv", index=False)

@@ -5,7 +5,6 @@ Strings together `lattice` and `features` to create synthetic data
 from lattice.gen import LatticeGenerator
 from features.compute_all import compute_feature_vectors
 import numpy as np
-from tqdm import tqdm
 import sys
 import os
 
