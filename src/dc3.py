@@ -24,12 +24,12 @@ class DC3:
         self.model.eval()
 
         # Pull normalization values out from model
-        self.means = self.model.means.cpu()
-        self.stds = self.model.stds.cpu()
+        self.means = self.model.means.cpu().numpy()
+        self.stds = self.model.stds.cpu().numpy()
 
         # Mapping
-        self.str_to_label = label_map
-        self.label_to_str = {v: k for k, v in label_map.items()}
+        self.label_str_to_int = label_map
+        self.label_int_to_str = {v: k for k, v in label_map.items()}
 
         # Reference vectors and delta cutoffs
         self.ref_vecs = compute_ref_vec(ref_vec_folder, self.means, self.stds)
@@ -42,17 +42,32 @@ class DC3:
         results = []
 
         with torch.no_grad():
-            preds = self.model(features.to(self.device)).argmax(dim=1).cpu()
+            preds = self.model(torch.from_numpy(features).float().to(self.device)).argmax(dim=1).cpu().numpy()
 
         for i in range(len(features)):
             if not amorphous[i]:
-                ref_vec = self.ref_vecs[self.label_to_str[preds[i]]]
+                ref_vec = self.ref_vecs[self.label_int_to_str[preds[i]]]
                 normalized_feature = (features[i] - self.means) / (self.stds + 1e-6)
                 dist = np.linalg.norm(normalized_feature - ref_vec)
 
-                if dist >= self.delta_cutoffs[self.label_to_str[preds[i]]]:
+                if dist >= self.delta_cutoffs[self.label_int_to_str[preds[i]]]:
                     results.append("unknown")
                 else:
-                    results.append(preds[i])
+                    results.append(self.label_int_to_str[preds[i]])
             else:
                 results.append("amorphous")
+        
+        return results
+
+
+tester = DC3("ml/models/model_2025-04-26_23-04-46.pt", 
+             {"bcc": 0, "cd": 1, "fcc": 2, "hcp": 3, "hd": 4, "sc": 5}, 
+             "lattice/features", "ml_dataset/features")
+
+print("Done initializing")
+
+import ovito
+pipeline = ovito.io.import_file("dump_0.96_relaxed.gz") # mg hcp
+lattice = pipeline.compute(0)
+# calculate_amorphous(lattice)
+print(tester.calculate(lattice))

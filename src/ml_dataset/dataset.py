@@ -14,7 +14,7 @@ class CrystalDataset(Dataset):
 
         self.data = []
         self.labels = []
-        self.label_map = {"amorphous": 0, "unknown": 1}
+        self.label_map = {}
 
         for structure_name in tqdm(os.listdir(folder)):
             if os.path.isdir(os.path.join(folder, structure_name)):

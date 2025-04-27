@@ -85,6 +85,7 @@ def calculate_all_coherence_values(
 
         coh_fac[atom] /= n_b
 
+    print(coh_fac)
     return coh_fac
 
 
@@ -94,5 +95,5 @@ def calculate_amorphous(data: DataCollection) -> np.ndarray:
     """
     return (
         calculate_all_coherence_values(N_B_COHERENCE, L_LIST_COHERENCE, data)
-        >= ALPHA_CUTOFF
+        < ALPHA_CUTOFF
     )
