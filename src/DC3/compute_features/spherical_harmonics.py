@@ -33,7 +33,7 @@ def precalculate_sop_norm_factors(max_l: int) -> np.ndarray:
     return norm_factors
 
 
-@nb.njit
+@nb.njit(fastmath=True)
 def double_fact(i: int) -> int:
     """
     Calculates i!! and returns 1 if i < 0
@@ -49,7 +49,7 @@ def double_fact(i: int) -> int:
     return result
 
 
-@nb.njit
+@nb.njit(fastmath=True)
 def calc_spherical_harmonics(
     l: int, thetas: np.ndarray, phis: np.ndarray, norm_factors: np.ndarray
 ) -> np.ndarray:
