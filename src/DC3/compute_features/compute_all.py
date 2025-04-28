@@ -4,6 +4,7 @@ from DC3.compute_features.sop import calculate_all_sop
 from DC3.compute_features.rsf import calculate_all_rsf
 from DC3.constants import N_B_ARR, L_ARR_FEATURES, R_MULTS, SIGMA_MULT
 
+
 def compute_feature_vectors(data: DataCollection) -> np.ndarray:
     """
     Computes feature vectors given data. Does not normalize.

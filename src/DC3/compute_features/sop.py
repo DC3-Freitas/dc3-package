@@ -53,10 +53,8 @@ def sop_single_atom(
                 q_accum_all += all_sph_harmonics[cur_atom]
                 cur_atom += 1
 
-            q_vals_all[out_idx] = (
-                np.sqrt(
-                    (4 * np.pi) / (2 * l + 1) * (np.linalg.norm(q_accum_all / n_b) ** 2)
-                )
+            q_vals_all[out_idx] = np.sqrt(
+                (4 * np.pi) / (2 * l + 1) * (np.linalg.norm(q_accum_all / n_b) ** 2)
             )
             out_idx += 1
 

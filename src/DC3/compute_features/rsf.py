@@ -62,7 +62,7 @@ def calc_rsf_single_atom(
     for i, dist in enumerate(all_dists):
         while n_b_idx < len(r_avg) and dist > r_cuts[n_b_idx]:
             fvec[n_b_idx * len(r_mults) : (n_b_idx + 1) * len(r_mults)] = calc_group_g(
-                dists[: i], r_avg[n_b_idx], r_mults, sigma_mult
+                dists[:i], r_avg[n_b_idx], r_mults, sigma_mult
             )
             n_b_idx += 1
         dists[i] = dist
@@ -139,7 +139,9 @@ def calculate_all_rsf(
 
     for atom in tqdm(range(num_atoms), "RSF: Calculating"):
         # The neighbors here may not be in sorted order so we manually sort them
-        all_dists = np.array(sorted([neigh.distance for neigh in finder_cutoff.find(atom)]))
+        all_dists = np.array(
+            sorted([neigh.distance for neigh in finder_cutoff.find(atom)])
+        )
         feature_vec[atom, :] = calc_rsf_single_atom(
             r_avgs[atom], r_cuts, all_dists, r_mults, sigma_mult
         )
