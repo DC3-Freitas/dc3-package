@@ -50,12 +50,12 @@ class DC3Modifier(ModifierInterface):
 
         # Convert
         for i in range(len(result)):
-            if result[i] in self.label_map:
-                result[i] = self.label_map[result[i]]
+            if result[i] in self.dc3.label_str_to_int:
+                result[i] = self.dc3.label_str_to_int[result[i]]
             elif result[i] == "amorphous":
-                result[i] = len(self.label_map)
+                result[i] = len(self.dc3.label_str_to_int)
             elif (result[i] == "unknown"):
-                result[i] = len(self.label_map) + 1
+                result[i] = len(self.dc3.label_str_to_int) + 1
             else:
                 raise ValueError("Unknown reult")
 
