@@ -110,7 +110,7 @@ def create_model(structure_map: None | str | dict[str, str | None]) -> DC3:
 
     else:
         dc3_path = structure_map if structure_map is not None else SAVED_FULL_MODEL_PATH
-        assert os.path.isfile(dc3_path), "DC3 model must exist"
+        assert os.path.isfile(dc3_path), f"DC3 model at {dc3_path} does not exist"
 
         # Load 
         dc3_loaded = torch.load(dc3_path, map_location="cpu", weights_only=False)

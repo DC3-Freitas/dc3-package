@@ -93,7 +93,7 @@ def create_and_save_dc3():
         # Expects form <structure_name>.npy
         structure_map[f[:-4]] = None
     
-    create_model(structure_map).save("pretrained", SAVED_DIR)
+    create_model(structure_map).save("dc3_full_model", SAVED_DIR)
 
 
 def main():
