@@ -1,6 +1,6 @@
 from ovito.io import import_file
 from DC3.compute_features.compute_all import compute_feature_vectors
-from DC3.ml_dataset.multiprocess_lattices import generate_from_perfect_lattices
+from DC3.ml_dataset.process_lattices import generate_from_perfect_lattices
 import numpy as np
 import os
 from DC3.constants import SAVED_PERFECT_FEAT_DIR, SAVED_SYNTH_FEAT_DIR

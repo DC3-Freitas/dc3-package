@@ -1,10 +1,8 @@
 import numpy as np
 import os
-import multiprocessing
-from tqdm.contrib.concurrent import process_map
 from DC3.compute_features.compute_all import compute_feature_vectors
 from DC3.lattice.gen import LatticeGenerator
-from DC3.constants import SAVED_PERFECT_MD_DIR, SAVED_SYNTH_FEAT_DIR, TEMPS
+from DC3.constants import TEMPS
 
 def create(lattice_path, alpha, structure: None | str, save_dir: None | list[str]):
     """
@@ -30,11 +28,6 @@ def create(lattice_path, alpha, structure: None | str, save_dir: None | list[str
     return (structure, features)
 
 
-def run_create(args: tuple[str, int, str | None]) -> np.ndarray:
-    """Helper to unpack arguments and call create()."""
-    return create(*args)
-
-
 def generate_from_perfect_lattices(lattice_paths: list[str], structures: None | list[str], save_dirs: None | list[str] = None) -> list[np.ndarray]:
     """
     TODO
@@ -45,7 +38,5 @@ def generate_from_perfect_lattices(lattice_paths: list[str], structures: None | 
         for temp in TEMPS:
             runs.append((lattice_path, temp, structures[i] if structures is not None else None, save_dirs[i] if save_dirs is not None else None))
 
-    num_workers = min(
-        int(os.getenv("SLURM_CPUS_ON_NODE", multiprocessing.cpu_count())), len(runs)
-    )
-    return process_map(run_create, runs, max_workers=num_workers)
+    # Unfortunately needs to be single threaded because OVITO GUI does not support multithreading
+    return [create(*args) for args in runs]

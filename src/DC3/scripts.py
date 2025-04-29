@@ -2,7 +2,7 @@ import os
 import numpy as np
 from ovito.io import import_file
 from DC3.compute_features.compute_all import compute_feature_vectors
-from DC3.ml_dataset.multiprocess_lattices import generate_from_perfect_lattices
+from DC3.ml_dataset.process_lattices import generate_from_perfect_lattices
 from DC3.ml_dataset.dataset import CrystalDataset
 from DC3.ml.model import MLPModel
 from DC3.ml.train import train
@@ -86,7 +86,6 @@ def calculate_outliers():
 
 
 def create_and_save_dc3():
-
     # Note that the ml model here may be different than whatever model is currently saved
     structure_map = {}
     for f in os.listdir(SAVED_PERFECT_FEAT_DIR):

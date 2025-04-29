@@ -35,7 +35,7 @@ class CrystalDataset(Dataset):
                 json.dump(self.label_map, f)
 
         print(
-            f"Loaded dataset with {len(self.label_map)} classes and {len(self.features)} samples"
+            f"\nLoaded dataset with {len(self.label_map)} classes and {len(self.features)} samples"
         )
 
     def __len__(self):
