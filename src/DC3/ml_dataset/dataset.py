@@ -4,58 +4,42 @@ PyTorch Dataset for crystal structures
 
 from torch.utils.data import Dataset
 import numpy as np
-import os
-from tqdm import tqdm
 import json
-
+import os
 
 class CrystalDataset(Dataset):
-    def __init__(self, folder):
-        print(f"Loading CrystalDataset from {folder}")
-
-        self.data = []
+    def __init__(self, data: list[tuple[str, np.ndarray]], save_label_map_dir: None | str = None):
+        # Create label and label map
         self.labels = []
         self.label_map = {}
 
-        for structure_name in tqdm(os.listdir(folder)):
-            if os.path.isdir(os.path.join(folder, structure_name)):
-                for f in tqdm(os.listdir(os.path.join(folder, structure_name))):
-                    if f.endswith(".npy"):
-                        data = np.load(os.path.join(folder, structure_name, f))
+        for structure, features in data:
+            assert not np.any(np.isnan(features)), f"Found nan in features associated with {structure}"
 
-                        # Check data integrity
-                        if np.any(np.isnan(data)):
-                            print(f"Skipping {f} due to NaN values")
-                            continue
+            if structure not in self.label_map:
+                self.label_map[structure] = len(self.label_map)
 
-                        # Name should be in the form <strcture>_number.npy
-                        label = structure_name
-                        if label not in self.label_map:
-                            self.label_map[label] = len(self.label_map)
+            self.labels += [self.label_map[structure] for _ in range(features.shape[0])]
 
-                        self.data.append(data)
-                        self.labels += [
-                            self.label_map[label] for _ in range(data.shape[0])
-                        ]
-
-        self.data = np.vstack(self.data)
+        # Get features and make labels into numpy form
+        self.features = np.vstack([features.copy() for _, features in data])
         self.labels = np.array(self.labels)
 
         # Normalization parameters (normalize inside the model instead)
-        self.means = np.mean(self.data, axis=0)
-        self.stds = np.std(self.data, axis=0)
+        self.means = np.mean(self.features, axis=0)
+        self.stds = np.std(self.features, axis=0)
 
-        # Save label map
-        label_map_path = "ml_dataset/label_map.json"
-        with open(label_map_path, "w") as f:
-            json.dump(self.label_map, f)
+        # Save label map if requested
+        if save_label_map_dir is not None:
+            with open(os.path.join(save_label_map_dir, "label_map.json"), "w") as f:
+                json.dump(self.label_map, f)
 
         print(
-            f"Loaded dataset with {len(self.label_map)} classes and {len(self.data)} samples"
+            f"Loaded dataset with {len(self.label_map)} classes and {len(self.features)} samples"
         )
 
     def __len__(self):
-        return len(self.data)
+        return len(self.features)
 
     def __getitem__(self, idx):
-        return self.data[idx], self.labels[idx]
+        return self.features[idx], self.labels[idx]

@@ -8,7 +8,7 @@ from DC3.compute_features.spherical_harmonics import (
 )
 
 
-@nb.njit(fastmath=True)
+@nb.njit(fastmath=True, cache=True)
 def sop_single_atom(
     n_b_arr: np.ndarray,
     l_arr: np.ndarray,

@@ -1,25 +1,51 @@
 import numpy as np
 import os
 import multiprocessing
-from concurrent.futures import ProcessPoolExecutor
-from DC3.ml_dataset.data_gen_single import create
+from tqdm.contrib.concurrent import process_map
+from DC3.compute_features.compute_all import compute_feature_vectors
+from DC3.lattice.gen import LatticeGenerator
+from DC3.constants import SAVED_PERFECT_MD_DIR, SAVED_SYNTH_FEAT_DIR, TEMPS
+
+def create(lattice_path, alpha, structure: None | str, save_dir: None | list[str]):
+    """
+    Creates numpy dataset of synthetic RSF/SOP data.
+
+    Args:
+        TODO: FIX THIS
+        alpha: Thermal displacement
+
+    Returns:
+        Nothing
+    """
+    # Initialize generator
+    generator = LatticeGenerator()
+    generator.load_lammps(lattice_path)
+    features = compute_feature_vectors(generator.generate(alpha))
+
+    # Save
+    if save_dir is not None:
+        os.makedirs(save_dir, exist_ok=True)
+        np.save(os.path.join(save_dir, f"{alpha:.3f}.npy"), features)
+    
+    return (structure, features)
 
 
-def run_sim(data):
-    create(*data)
+def run_create(args: tuple[str, int, str | None]) -> np.ndarray:
+    """Helper to unpack arguments and call create()."""
+    return create(*args)
 
 
-if __name__ == "__main__":
+def generate_from_perfect_lattices(lattice_paths: list[str], structures: None | list[str], save_dirs: None | list[str] = None) -> list[np.ndarray]:
+    """
+    TODO
+    """
     runs = []
-    structs = ["fcc", "bcc", "sc", "hd", "cd", "hcp"]
-    temps = np.linspace(0.01, 0.25, 10)
 
-    for struct in structs:
-        for temp in temps:
-            runs.append((struct, f"lattice/md_results/{struct}.gz", temp))
+    for i, lattice_path in enumerate(lattice_paths):
+        for temp in TEMPS:
+            runs.append((lattice_path, temp, structures[i] if structures is not None else None, save_dirs[i] if save_dirs is not None else None))
 
     num_workers = min(
         int(os.getenv("SLURM_CPUS_ON_NODE", multiprocessing.cpu_count())), len(runs)
     )
-    with ProcessPoolExecutor(max_workers=num_workers) as executor:
-        executor.map(run_sim, runs)
+    return process_map(run_create, runs, max_workers=num_workers)

@@ -1,10 +1,5 @@
 */__pycache__/
 __pycache__/
+**/.mypy_cache/
 *.py[cod]
 *.out # SLURM job output
-*.pt
-*.pth
-ml_dataset/data_v2/*.gz
-ml_dataset/data_old/*.gz
-md/features/*
-md/data/*

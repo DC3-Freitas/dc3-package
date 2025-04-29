@@ -49,7 +49,6 @@ class LatticeGenerator:
         self.nn_distance = next(
             ovito.data.NearestNeighborFinder(1, self.lattice).find(0)
         ).distance
-        print(f"Nearest neighbor distance: {self.nn_distance}")
 
     def generate(self, alpha):
         """

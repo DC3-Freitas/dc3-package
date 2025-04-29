@@ -3,8 +3,8 @@ import torch.nn as nn
 import warnings
 
 
-class MLP_Model(nn.Module):
-    def __init__(self, means=None, stds=None):
+class MLPModel(nn.Module):
+    def __init__(self, classes, means=None, stds=None):
         super().__init__()
 
         self.network = nn.Sequential(
@@ -16,7 +16,7 @@ class MLP_Model(nn.Module):
             nn.ReLU(),
             nn.Linear(100, 100),
             nn.ReLU(),
-            nn.Linear(100, 6),
+            nn.Linear(100, classes),
             nn.LogSoftmax(dim=1),
         )
 

@@ -1,44 +1,49 @@
 import torch
 import numpy as np
-from DC3.ml.model import MLP_Model
+import os
+import json
+from DC3.constants import SAVED_PERFECT_FEAT_DIR, SAVED_FULL_MODEL_PATH
+from DC3.ml.model import MLPModel
 from ovito.data import DataCollection
 from DC3.compute_features.compute_all import compute_feature_vectors
 from DC3.outlier.coherence import calculate_amorphous
 from DC3.outlier.outlier_cutoffs import compute_ref_vec, compute_delta_cutoff
-
+from DC3.data_handler import DataHandler
+from DC3.ml_dataset.dataset import CrystalDataset
+from DC3.ml.train import train
 
 class DC3:
     def __init__(
         self,
-        model_path: str,
-        label_map: dict[str, int],
-        ref_vec_folder: str,
-        synthetic_data_folder: str,
+        model,
+        label_map,
+        ref_vecs,
+        delta_cutoffs: str,
     ) -> None:
+        
         # Model
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.model = MLP_Model()
-        self.model.load_state_dict(
-            torch.load(model_path, map_location=self.device, weights_only=True)
-        )
+        self.model = model
         self.model.to(self.device)
         self.model.eval()
 
-        # Pull normalization values out from model
-        self.means = self.model.means.cpu().numpy()
-        self.stds = self.model.stds.cpu().numpy()
+        # Pull normalization values out of model
+        self.means = self.model.means.cpu().detach().numpy()
+        self.stds = self.model.stds.cpu().detach().numpy()
 
         # Mapping
         self.label_str_to_int = label_map
         self.label_int_to_str = {v: k for k, v in label_map.items()}
 
         # Reference vectors and delta cutoffs
-        self.ref_vecs = compute_ref_vec(ref_vec_folder, self.means, self.stds)
-        self.delta_cutoffs = compute_delta_cutoff(
-            synthetic_data_folder, self.ref_vecs, self.means, self.stds
-        )
+        self.ref_vecs = ref_vecs
+        self.delta_cutoffs = delta_cutoffs
+
 
     def calculate(self, lattice: DataCollection) -> np.ndarray:
+        """
+        TODO
+        """
         features = compute_feature_vectors(lattice)
         amorphous = calculate_amorphous(lattice)
         results = []
@@ -65,23 +70,58 @@ class DC3:
                 results.append("amorphous")
 
         return results
+    
 
+    def save(self, model_name: str, file_dir: str) -> None:
+        # Encode into tensor
+        meta_json = json.dumps({
+            "label_map" : self.label_str_to_int,
+            "ref_vecs" : {k: v.tolist() for k, v in self.ref_vecs.items()},
+            "delta_cutoffs": {k: float(v) for k, v in self.delta_cutoffs.items()}
+        }).encode("utf-8")
 
-if __name__ == "__main__":
-    # Example usage
-    tester = DC3(
-        "ml/models/model_2025-04-26_23-04-46.pt",
-        {"bcc": 0, "cd": 1, "fcc": 2, "hcp": 3, "hd": 4, "sc": 5},
-        "lattice/features",
-        "ml_dataset/features",
-    )
+        meta_tensor = torch.tensor(list(meta_json), dtype=torch.uint8)
 
-    print("Done initializing")
+        # Save
+        torch.save({
+            "state_dict": self.model.cpu().state_dict(),
+            "metadata"  : meta_tensor
+        }, os.path.join(file_dir, f"{model_name}.pth"))
 
-    import ovito
+def create_model(structure_map: None | str | dict[str, str | None]) -> DC3:
+    """
+    TODO
+    """
+    if isinstance(structure_map, dict):
+        # Data
+        data_handler = DataHandler(structure_map)
+        dataset = CrystalDataset(data_handler.get_synthetic_data())
 
-    pipeline = ovito.io.import_file("dump_1.44_relaxed.gz")  # mg hcp
-    lattice = pipeline.compute(0)
-    # calculate_amorphous(lattice)
-    # tester.calculate(lattice)
-    print(tester.calculate(lattice))
+        # Model
+        model = MLPModel(len(dataset.label_map), dataset.means, dataset.stds)
+        train(model, dataset)
+
+        # Outlier
+        ref_vecs = compute_ref_vec(data_handler.get_perfect_lattice_data(), dataset.means, dataset.stds)
+        delta_cutoffs = compute_delta_cutoff(data_handler.get_synthetic_data(), ref_vecs, dataset.means, dataset.stds)
+
+        # Turn everything into a DC3 model
+        return DC3(model, dataset.label_map, ref_vecs, delta_cutoffs)
+
+    else:
+        dc3_path = structure_map if structure_map is not None else SAVED_FULL_MODEL_PATH
+        assert os.path.isfile(dc3_path), "DC3 model must exist"
+
+        # Load 
+        dc3_loaded = torch.load(dc3_path, map_location="cpu", weights_only=False)
+
+        # Decode
+        metadata_bytes = bytes(dc3_loaded["metadata"].tolist())
+        metadata = json.loads(metadata_bytes.decode("utf-8"))
+        ref_vecs = {k: np.array(v) for k, v in metadata["ref_vecs"].items()}
+
+        # Model
+        model = MLPModel(classes=len(metadata["label_map"]))
+        model.load_state_dict(dc3_loaded["state_dict"], strict=True)        
+
+        return DC3(model, metadata["label_map"], ref_vecs, metadata["delta_cutoffs"])

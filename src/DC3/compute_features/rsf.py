@@ -4,7 +4,7 @@ from ovito.data import NearestNeighborFinder, CutoffNeighborFinder, DataCollecti
 from tqdm import tqdm
 
 
-@nb.njit(fastmath=True, inline="always")
+@nb.njit(fastmath=True, inline="always", cache=True)
 def calc_group_g(
     dists: np.ndarray, avg: float, r_mults: np.ndarray, sigma_mult: float
 ) -> np.ndarray:
@@ -32,7 +32,7 @@ def calc_group_g(
     return fvec
 
 
-@nb.njit(fastmath=True)
+@nb.njit(fastmath=True, cache=True)
 def calc_rsf_single_atom(
     r_avg: np.ndarray,
     r_cuts: np.ndarray,

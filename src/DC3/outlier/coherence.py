@@ -6,23 +6,23 @@ from DC3.compute_features.spherical_harmonics import (
     calc_spherical_harmonics,
 )
 import numba as nb
-from DC3.constants import *
+from DC3.constants import N_B_COHERENCE, L_ARR_COHERENCE, ALPHA_CUTOFF
 
 
-@nb.njit
+@nb.njit(fastmath=True, cache=True)
 def coherence_single_atom(
-    l_list: list[int], unit_vecs: np.ndarray, norm_factors: np.ndarray
+    l_arr: np.ndarray, unit_vecs: np.ndarray, norm_factors: np.ndarray
 ) -> np.ndarray:
     """
     Calculates vector (Xi) used to calculate vector used for coherence
     for a single atom.
 
     Args:
-        l_list: values of l to be included in the vectors
+        l_arr: values of l to be included in the vectors
         unit_vecs: positions of atoms in array of shape (n, 3)
         norm_factors: precalculated values used in spherical harmonics
     Returns:
-        A vector of size sum(l_list * 2 + 1) used for coherence.
+        A vector of size sum(l_arr * 2 + 1) used for coherence.
 
         More specifically, this vector is described as the concatenation
         of the vectors in the following list.
@@ -35,10 +35,10 @@ def coherence_single_atom(
     phis = np.arctan2(y_coords, x_coords)
 
     # 2) Calculate vectors
-    E_vec = np.zeros((np.sum(np.array(l_list) * 2 + 1)), dtype=np.complex128)
+    E_vec = np.zeros((np.sum(l_arr * 2 + 1)), dtype=np.complex128)
     index = 0
 
-    for l in l_list:
+    for l in l_arr:
         all_sph_harmonics = calc_spherical_harmonics(l, thetas, phis, norm_factors)
         E_vec[index : index + 2 * l + 1] += np.sum(all_sph_harmonics, axis=0) / len(
             unit_vecs
@@ -51,7 +51,7 @@ def coherence_single_atom(
 
 
 def calculate_all_coherence_values(
-    n_b: int, l_list: list[int], data: DataCollection
+    n_b: int, l_arr: np.ndarray, data: DataCollection
 ) -> np.ndarray:
     """
     Calculates coherence parameter for each atom. The smaller it is,
@@ -59,7 +59,7 @@ def calculate_all_coherence_values(
 
     Args:
         N_neigh: number of neighbors we need to consider in our calculations
-        l_list: values of l to be considered
+        l_arr: values of l to be considered
         data: object containing information about all the atoms
     Returns:
         Coherence parameter of each atom in the range [0, 1] with
@@ -68,17 +68,17 @@ def calculate_all_coherence_values(
     # 1) Initialize variables
     finder = NearestNeighborFinder(n_b, data)
     num_atoms = data.particles.count
-    norm_factors = precalculate_sop_norm_factors(max(l_list))
+    norm_factors = precalculate_sop_norm_factors(max(l_arr))
 
-    E_vec = np.zeros((num_atoms, np.sum(np.array(l_list) * 2 + 1)), dtype=np.complex128)
+    E_vec = np.zeros((num_atoms, np.sum(l_arr * 2 + 1)), dtype=np.complex128)
     coh_fac = np.zeros(num_atoms)
 
     # 2) Calculate all vectors
     for atom in tqdm(range(num_atoms), desc="Coherence: Vectors"):
         unit_vecs = np.array(
-            [neigh.delta / np.linalg.norm(neigh.delta) for neigh in finder.find(atom)]
+            [np.array(neigh.delta) / np.linalg.norm(neigh.delta) for neigh in finder.find(atom)]
         )
-        E_vec[atom] = coherence_single_atom(l_list, unit_vecs, norm_factors)
+        E_vec[atom] = coherence_single_atom(l_arr, unit_vecs, norm_factors)
 
     # 3) Calculate coherence via dot products
     for atom in range(num_atoms):
@@ -96,6 +96,6 @@ def calculate_amorphous(data: DataCollection) -> np.ndarray:
     TODO
     """
     return (
-        calculate_all_coherence_values(N_B_COHERENCE, L_LIST_COHERENCE, data)
+        calculate_all_coherence_values(N_B_COHERENCE, L_ARR_COHERENCE, data)
         < ALPHA_CUTOFF
     )
