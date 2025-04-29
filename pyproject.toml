@@ -28,5 +28,8 @@ repository = "https://github.com/DC3-Freitas/dc3-package"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+"*" = ["*.*"]
+
 [project.entry-points.'OVITO.Modifier']
 "DC3 Classification" = "DC3:DC3Modifier"
