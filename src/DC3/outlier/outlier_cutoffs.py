@@ -1,13 +1,26 @@
 import numpy as np
 import json
 import os
-from DC3.constants import PERCENT_CUTOFF, SAVED_SYNTH_FEAT_DIR, SAVED_PERFECT_FEAT_DIR
+from DC3.constants import PERCENT_CUTOFF
+
 
 def compute_ref_vec(
-    data: list[tuple[str, np.ndarray]], means: np.ndarray, stds: np.ndarray, save_dir: str | None = None
+    data: list[tuple[str, np.ndarray]],
+    means: np.ndarray,
+    stds: np.ndarray,
+    save_dir: str | None = None,
 ) -> dict[str, np.ndarray]:
     """
-    TODO
+    Computes a normalized reference feature vector for each structure type
+    based off perfect lattices.
+
+    Args:
+        data: list of (structure name, feature matrix) pairs
+        means: per-feature means used for normalization
+        stds: per-feature standard deviations used for normalization
+        save_dir: if provided, saves reference vectors to ref_vecs.npz in this directory
+    Returns:
+        Dictionary mapping structure names to their reference feature vectors
     """
     ref_vec = {}
 
@@ -27,10 +40,19 @@ def compute_delta_cutoff(
     ref_vecs: dict[str, np.ndarray],
     means: np.ndarray,
     stds: np.ndarray,
-    save_dir: str | None = None
+    save_dir: str | None = None,
 ) -> dict[str, float]:
-    """ 
-    TODO
+    """
+    Computes cutoff thresholds for deviation from each structure's reference vector.
+
+    Args:
+        data: list of (structure name, feature matrix) pairs
+        ref_vecs: dictionary mapping structure names to reference feature vectors
+        means: per-feature means used for normalization
+        stds: per-feature standard deviations used for normalization
+        save_dir: if provided, saves thresholds to label_map.json in this directory
+    Returns:
+        Dictionary mapping structure names to their distance cutoff threshold
     """
 
     # Get distances
@@ -44,11 +66,9 @@ def compute_delta_cutoff(
             distances[structure] = []
 
         distances[structure].extend(
-            np.linalg.norm(
-                normalized_features - ref_vecs[structure], axis=1
-            ).tolist()
+            np.linalg.norm(normalized_features - ref_vecs[structure], axis=1).tolist()
         )
-        
+
     # Calculate 99-th percentile
     for label in distances.keys():
         distances[label] = np.percentile(np.array(distances[label]), PERCENT_CUTOFF)

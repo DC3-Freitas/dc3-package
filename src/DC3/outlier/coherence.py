@@ -66,8 +66,10 @@ def calculate_all_coherence_values(
         smaller values indicating a more amorphous arrangement of neighbors.
     """
     # 1) Initialize variables
-    finder = NearestNeighborFinder(n_b, data)
     num_atoms = data.particles.count
+    assert num_atoms >= n_b, "Must have sufficient number of atoms"
+
+    finder = NearestNeighborFinder(n_b, data)
     norm_factors = precalculate_sop_norm_factors(max(l_arr))
 
     E_vec = np.zeros((num_atoms, np.sum(l_arr * 2 + 1)), dtype=np.complex128)
@@ -76,7 +78,10 @@ def calculate_all_coherence_values(
     # 2) Calculate all vectors
     for atom in tqdm(range(num_atoms), desc="Coherence: Vectors"):
         unit_vecs = np.array(
-            [np.array(neigh.delta) / np.linalg.norm(neigh.delta) for neigh in finder.find(atom)]
+            [
+                np.array(neigh.delta) / np.linalg.norm(neigh.delta)
+                for neigh in finder.find(atom)
+            ]
         )
         E_vec[atom] = coherence_single_atom(l_arr, unit_vecs, norm_factors)
 
@@ -93,7 +98,12 @@ def calculate_all_coherence_values(
 
 def calculate_amorphous(data: DataCollection) -> np.ndarray:
     """
-    TODO
+    Classifies each atom in given data as amorphous or not amorphous.
+
+    Args:
+        data: OVITO DataCollection containing information about atoms
+    Returns:
+        A boolean array indicating whether each atom is amorphous (1 means amorphous, 0 means not amorphous)
     """
     return (
         calculate_all_coherence_values(N_B_COHERENCE, L_ARR_COHERENCE, data)
