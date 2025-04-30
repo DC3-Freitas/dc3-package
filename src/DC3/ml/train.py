@@ -6,22 +6,33 @@ from DC3.ml_dataset.dataset import CrystalDataset
 import numpy as np
 from datetime import datetime
 import os
-from DC3.constants import EPOCHS, BATCH_SIZE, SHUFFLE_DATASET, TRAIN_VAL_SPLIT, SAVED_DIR, SAVED_SYNTH_FEAT_DIR, SAVED_ML_MODELS_DIR, SAVED_ML_STATS_DIR
+from DC3.constants import EPOCHS, BATCH_SIZE, SHUFFLE_DATASET, TRAIN_VAL_SPLIT
 
 
 def train(
     model: MLPModel,
     dataset: CrystalDataset,
-    exp_name=None,
-    save_model_dir=None,
-    save_stats_dir=None,
-    epochs=EPOCHS,
-    batch_size=BATCH_SIZE,
-    shuffle_dataset=SHUFFLE_DATASET,
-    train_val_split=TRAIN_VAL_SPLIT,
-):
+    exp_name: str | None = None,
+    save_model_dir: str | None = None,
+    save_stats_dir: str | None = None,
+    epochs: int = EPOCHS,
+    batch_size: int = BATCH_SIZE,
+    shuffle_dataset: bool = SHUFFLE_DATASET,
+    train_val_split: float = TRAIN_VAL_SPLIT,
+) -> None:
     """
-    TODO
+    Trains a MLP model given dataset using standard supervised learning techniques.
+
+    Args:
+        model: the MLPModel to be trained
+        dataset: a CrystalDataset containing input features and labels
+        exp_name: optional name for the experiment; if not provided, uses a timestamp
+        save_model_dir: if not None, directory to save the best model (by validation accuracy)
+        save_stats_dir: if not None, directory to save a CSV log of loss and accuracy
+        epochs: number of training epochs
+        batch_size: batch size used during training
+        shuffle_dataset: whether to shuffle the dataset before splitting
+        train_val_split: proportion of the dataset to use for training
     """
 
     # 1) Setup
@@ -32,12 +43,14 @@ def train(
     # Empty the file
     if save_stats_dir is not None:
         os.makedirs(save_stats_dir, exist_ok=True)
-        
+
         with open(os.path.join(save_stats_dir, f"{exp_name}.csv"), "w") as f:
             pass
 
     print("\n== Preparing Trainer ==")
-    print(f"Parameters: epochs={epochs}, batch_size={batch_size}, shuffle_dataset={shuffle_dataset}, train_val_split={train_val_split}")
+    print(
+        f"Parameters: epochs={epochs}, batch_size={batch_size}, shuffle_dataset={shuffle_dataset}, train_val_split={train_val_split}"
+    )
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
@@ -102,7 +115,9 @@ def train(
         if save_model_dir is not None and val_acc > best_val_acc:
             best_val_acc = val_acc
             os.makedirs(save_model_dir, exist_ok=True)
-            torch.save(model.state_dict(), os.path.join(save_model_dir, f"{exp_name}.pth"))
+            torch.save(
+                model.state_dict(), os.path.join(save_model_dir, f"{exp_name}.pth")
+            )
 
         if save_stats_dir is not None:
             os.makedirs(save_stats_dir, exist_ok=True)

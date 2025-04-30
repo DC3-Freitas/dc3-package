@@ -1,10 +1,34 @@
+import numpy as np
 import torch
 import torch.nn as nn
 import warnings
 
 
 class MLPModel(nn.Module):
-    def __init__(self, classes, means=None, stds=None):
+    """
+    Multilayer perceptron (MLP) model for structural classification.
+    Also handles input normalization interally (so does not expect normalized data).
+
+    Attributes:
+        means: tensor containing mean of each specific input feature
+        stds: tensor containing standard deviation of each specific input feature
+        network: architecture of model
+    """
+
+    def __init__(
+        self,
+        classes: int,
+        means: np.ndarray | None = None,
+        stds: np.ndarray | None = None,
+    ) -> None:
+        """
+        Initialize the MLP model.
+
+        Args:
+            classes: number of output classes.
+            means: mean values for input normalization.
+            stds: standard deviation values for input normalization.
+        """
         super().__init__()
 
         self.network = nn.Sequential(
@@ -35,7 +59,15 @@ class MLPModel(nn.Module):
         self.register_buffer("means", means)
         self.register_buffer("stds", stds)
 
-    def forward(self, x):
+    def forward(self, x: torch.tensor) -> torch.tensor:
+        """
+        Performs forward pass in the NN.
+
+        Args:
+            x: input tensor you want to perform ineference on
+        Returns:
+            Output of the model after passing in x
+        """
         # Warn if we attempted to do forward prop but the means or stds still match their default values
         if torch.equal(self.means, torch.zeros_like(self.means)):
             warnings.warn(
