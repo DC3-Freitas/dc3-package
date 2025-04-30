@@ -82,6 +82,8 @@ def calculate_all_sop(
     assert np.all(n_b_arr == np.sort(n_b_arr)), "n_b_arr should be sorted"
 
     num_atoms = data.particles.count
+    assert num_atoms >= n_b_arr.max(), "Must have sufficient number of atoms"
+
     feature_vec = np.zeros((data.particles.count, len(n_b_arr) * len(l_arr)))
     finder = NearestNeighborFinder(max(n_b_arr), data)
 

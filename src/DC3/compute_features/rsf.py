@@ -102,6 +102,7 @@ def calculate_all_rsf(
     assert np.all(n_b_arr == np.sort(n_b_arr)), "n_b_arr should be sorted"
 
     num_atoms = data.particles.count
+    assert num_atoms >= n_b_arr.max(), "Must have sufficient number of atoms"
 
     # 2) Calculate average distances for each (atom, N_b)
     r_avgs = np.zeros((num_atoms, len(n_b_arr)))
