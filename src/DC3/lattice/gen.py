@@ -1,3 +1,10 @@
+"""
+Generator for creating synthetic crystal lattice data.
+
+Creates synthetic crystal structures with thermal perturbations
+for training data generation and analysis.
+"""
+
 import numpy as np
 from ovito.data import Particles, DataCollection, SimulationCell, NearestNeighborFinder
 from ovito.io import import_file, export_file

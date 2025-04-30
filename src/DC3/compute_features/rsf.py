@@ -1,3 +1,7 @@
+"""
+Generates Radial Structure Function (RSF) values for feature computation.
+"""
+
 import numpy as np
 import numba as nb
 from ovito.data import NearestNeighborFinder, CutoffNeighborFinder, DataCollection

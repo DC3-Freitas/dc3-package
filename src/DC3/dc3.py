@@ -1,16 +1,21 @@
-import torch
-import numpy as np
-import os
+"""
+Core DC3 model implementation for crystal structure classification.
+Combines the MLP model and outlier detection to classify atomic structures.
+"""
+
 import json
-from DC3.constants import SAVED_FULL_MODEL_PATH
-from DC3.ml.model import MLPModel
+import os
+import numpy as np
+import torch
 from ovito.data import DataCollection
 from DC3.compute_features.compute_all import compute_feature_vectors
-from DC3.outlier.coherence import calculate_amorphous
-from DC3.outlier.outlier_cutoffs import compute_ref_vec, compute_delta_cutoff
+from DC3.constants import SAVED_FULL_MODEL_PATH
 from DC3.data_handler import DataHandler
+from DC3.ml.model import MLPModel
 from DC3.ml_dataset.dataset import CrystalDataset
 from DC3.ml.train import train
+from DC3.outlier.coherence import calculate_amorphous
+from DC3.outlier.outlier_cutoffs import compute_ref_vec, compute_delta_cutoff
 
 
 class DC3:

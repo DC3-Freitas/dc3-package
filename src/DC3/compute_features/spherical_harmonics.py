@@ -1,3 +1,7 @@
+"""
+Calculates spherical harmonics in a manual and optimized way.
+"""
+
 import math
 import numpy as np
 import numba as nb

@@ -1,12 +1,12 @@
+"""
+Utility scripts for the complete DC3 model pipeline.
+Used to test and save the output of components of the pipeline.
+"""
+
 import os
 import numpy as np
 from ovito.io import import_file
 from DC3.compute_features.compute_all import compute_feature_vectors
-from DC3.ml_dataset.process_lattices import generate_from_perfect_lattices
-from DC3.ml_dataset.dataset import CrystalDataset
-from DC3.ml.model import MLPModel
-from DC3.ml.train import train
-from DC3.outlier.outlier_cutoffs import compute_ref_vec, compute_delta_cutoff
 from DC3.constants import (
     SAVED_DIR,
     SAVED_PERFECT_MD_DIR,
@@ -17,6 +17,11 @@ from DC3.constants import (
     SAVED_OUTLIER_DIR,
 )
 from DC3.dc3 import create_model
+from DC3.ml.model import MLPModel
+from DC3.ml.train import train
+from DC3.ml_dataset.dataset import CrystalDataset
+from DC3.ml_dataset.process_lattices import generate_from_perfect_lattices
+from DC3.outlier.outlier_cutoffs import compute_ref_vec, compute_delta_cutoff
 
 
 def gen_features_from_perfect_lattices():

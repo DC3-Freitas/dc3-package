@@ -1,11 +1,15 @@
+"""
+Calculates coherence parameters for identifying amorphous regions.
+"""
+
 import numpy as np
+import numba as nb
 from ovito.data import NearestNeighborFinder, DataCollection
 from tqdm import tqdm
 from DC3.compute_features.spherical_harmonics import (
     precalculate_sop_norm_factors,
     calc_spherical_harmonics,
 )
-import numba as nb
 from DC3.constants import N_B_COHERENCE, L_ARR_COHERENCE, ALPHA_CUTOFF
 
 
@@ -103,7 +107,8 @@ def calculate_amorphous(data: DataCollection) -> np.ndarray:
     Args:
         data: OVITO DataCollection containing information about atoms
     Returns:
-        A boolean array indicating whether each atom is amorphous (1 means amorphous, 0 means not amorphous)
+        A boolean array indicating whether each atom is amorphous 
+        (1 means amorphous, 0 means not amorphous)
     """
     return (
         calculate_all_coherence_values(N_B_COHERENCE, L_ARR_COHERENCE, data)

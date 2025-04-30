@@ -1,7 +1,12 @@
-from torch.utils.data import Dataset
-import numpy as np
+"""
+PyTorch dataset implementation for crystal structure data. Supports
+label mapping and also calculates mean and standard deviation.
+"""
+
 import json
 import os
+import numpy as np
+from torch.utils.data import Dataset
 
 
 class CrystalDataset(Dataset):
@@ -18,7 +23,7 @@ class CrystalDataset(Dataset):
 
         Args:
             data: list of structure names and associated feature arrays of shape
-            save_label_map_dir: if provided, saves the structure-to-label mapping to this directory as a JSON file.
+            save_label_map_dir: if provided, saves the structure-to-label mapping to this directory as a JSON file
         """
         # Create label and label map
         self.labels = []

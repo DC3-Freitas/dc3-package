@@ -1,3 +1,7 @@
+"""
+Global constants and configuration values for the DC3 package.
+"""
+
 import os
 import numpy as np
 

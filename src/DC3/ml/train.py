@@ -1,11 +1,15 @@
+"""
+Trainer for the MLP model for DC3.
+"""
+
+import os
+from datetime import datetime
+import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, SubsetRandomSampler
 from DC3.ml.model import MLPModel
 from DC3.ml_dataset.dataset import CrystalDataset
-import numpy as np
-from datetime import datetime
-import os
 from DC3.constants import EPOCHS, BATCH_SIZE, SHUFFLE_DATASET, TRAIN_VAL_SPLIT
 
 

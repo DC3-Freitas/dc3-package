@@ -1,6 +1,10 @@
-import numpy as np
+"""
+Computes reference vectors and cutoff thresholds for outlier detection.
+"""
+
 import json
 import os
+import numpy as np
 from DC3.constants import PERCENT_CUTOFF
 
 

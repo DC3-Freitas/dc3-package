@@ -1,3 +1,8 @@
+"""
+MLP model architecture for crystal structure classification with
+built-in feature normalization.
+"""
+
 import numpy as np
 import torch
 from torch import nn

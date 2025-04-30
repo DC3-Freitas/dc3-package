@@ -1,3 +1,7 @@
+"""
+Generates Steinhardt Order Parameters (SOP) values for feature computation.
+"""
+
 import numpy as np
 import numba as nb
 from ovito.data import NearestNeighborFinder, DataCollection

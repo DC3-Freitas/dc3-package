@@ -1,8 +1,11 @@
+"""
+OVITO modifier for crystal structure classification using the DC3 model.
+"""
+
+from DC3.dc3 import create_model
 from ovito.data import DataCollection
 from ovito.pipeline import ModifierInterface
-from DC3.dc3 import create_model
 from traits.api import Any, Bool
-from collections.abc import Iterable
 
 
 class DC3Modifier(ModifierInterface):

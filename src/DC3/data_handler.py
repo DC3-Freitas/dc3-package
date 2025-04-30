@@ -1,9 +1,15 @@
+"""
+Data handling and preparation for crystal structure classification.
+Manages loading and preprocessing of perfect and synthetic lattice data
+for training and evaluating the DC3 model.
+"""
+
+import os
+import numpy as np
 from ovito.io import import_file
 from DC3.compute_features.compute_all import compute_feature_vectors
-from DC3.ml_dataset.process_lattices import generate_from_perfect_lattices
-import numpy as np
-import os
 from DC3.constants import SAVED_PERFECT_FEAT_DIR, SAVED_SYNTH_FEAT_DIR
+from DC3.ml_dataset.process_lattices import generate_from_perfect_lattices
 
 
 class DataHandler:
@@ -36,6 +42,7 @@ class DataHandler:
 
                 to_gen_paths.append(path)
                 to_gen_structures.append(structure)
+            
             # Path not specified: use existing
             else:
                 structure_perfect_dir = os.path.join(

@@ -1,5 +1,9 @@
-import numpy as np
+"""
+Processes perfect lattices to generate synthetic training data.
+"""
+
 import os
+import numpy as np
 from DC3.compute_features.compute_all import compute_feature_vectors
 from DC3.lattice.gen import LatticeGenerator
 from DC3.constants import TEMPS
@@ -47,7 +51,7 @@ def generate_from_perfect_lattices(
         structures: optional list of structure names, one per lattice
         save_dirs: optional list of directories to save results, one per lattice
     Returns:
-        List of (structure, feature matrix) pairs for all generated lattices.
+        List of (structure, feature matrix) pairs for all generated lattices
     """
     runs = []
 

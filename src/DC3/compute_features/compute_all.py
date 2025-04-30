@@ -1,7 +1,12 @@
+"""
+Complete feature computation that generates and combines both
+RSF and SOP features.
+"""
+
 import numpy as np
 from ovito.data import DataCollection
-from DC3.compute_features.sop import calculate_all_sop
 from DC3.compute_features.rsf import calculate_all_rsf
+from DC3.compute_features.sop import calculate_all_sop
 from DC3.constants import N_B_ARR, L_ARR_FEATURES, R_MULTS, SIGMA_MULT
 
 
