@@ -2,7 +2,7 @@ import torch
 import numpy as np
 import os
 import json
-from DC3.constants import SAVED_PERFECT_FEAT_DIR, SAVED_FULL_MODEL_PATH
+from DC3.constants import SAVED_FULL_MODEL_PATH
 from DC3.ml.model import MLPModel
 from ovito.data import DataCollection
 from DC3.compute_features.compute_all import compute_feature_vectors
@@ -32,8 +32,8 @@ class DC3:
         self.stds = self.model.stds.cpu().detach().numpy()
 
         # Mapping
-        self.label_str_to_int = label_map
-        self.label_int_to_str = {v: k for k, v in label_map.items()}
+        self.label_to_number = label_map
+        self.number_to_label = {v: k for k, v in label_map.items()}
 
         # Reference vectors and delta cutoffs
         self.ref_vecs = ref_vecs
@@ -58,14 +58,14 @@ class DC3:
 
         for i in range(len(features)):
             if not amorphous[i]:
-                ref_vec = self.ref_vecs[self.label_int_to_str[preds[i]]]
+                ref_vec = self.ref_vecs[self.number_to_label[preds[i]]]
                 normalized_feature = (features[i] - self.means) / (self.stds + 1e-6)
                 dist = np.linalg.norm(normalized_feature - ref_vec)
 
-                if dist >= self.delta_cutoffs[self.label_int_to_str[preds[i]]]:
+                if dist >= self.delta_cutoffs[self.number_to_label[preds[i]]]:
                     results.append("unknown")
                 else:
-                    results.append(self.label_int_to_str[preds[i]])
+                    results.append(self.number_to_label[preds[i]])
             else:
                 results.append("amorphous")
 
@@ -75,7 +75,7 @@ class DC3:
     def save(self, model_name: str, file_dir: str) -> None:
         # Encode into tensor
         meta_json = json.dumps({
-            "label_map" : self.label_str_to_int,
+            "label_map" : self.label_to_number,
             "ref_vecs" : {k: v.tolist() for k, v in self.ref_vecs.items()},
             "delta_cutoffs": {k: float(v) for k, v in self.delta_cutoffs.items()}
         }).encode("utf-8")

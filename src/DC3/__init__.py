@@ -11,24 +11,20 @@ class DC3Modifier(ModifierInterface):
     """
 
     structure_map = Any()
+    run = Bool(False, help="Check to start DC3 classification")
 
     def __init__(self):
         """
         Initialize the DC3Modifier with the model path and label mapping.
 
-        Args:
-            model_path (str): Path to the trained model file.
-            label_map (dict[str, int]): Mapping from structure names to integer labels.
-            ref_vec_path (str): Path to the reference vectors CSV file.
-            delta_cutoff_path (str): Path to the delta cutoffs CSV file.
+        TODO
         """
-        # need to figure out how this works with the pipeline
-        # if not self.model_path:
-        #     self.model_path = "ml\models\model_2025-04-26_19-26-39.pt"
-        # print("Initializing DC3Modifier")
-        # self.dc3 = DC3(
-        #     self.model_path, self.label_map, self.ref_vec_path, self.delta_cutoff_path
-        # )
+        super().__init__()
+
+        # Initial values
+        self.dc3 = None
+        self.number_to_label = {}
+        self.label_to_number = {}
 
     def modify(self, data: DataCollection, frame: int, **kwargs):
         """
@@ -40,23 +36,34 @@ class DC3Modifier(ModifierInterface):
             frame (int): The current frame number.
             **kwargs: Additional keyword arguments.
         """
-        # need to research how kwargs works in the pipeline
-        # print("Reinitializing DC3Modifier")
-        # self.dc3 = DC3(model_path, label_map, ref_vec_path, delta_cutoff_path)
-        self.dc3 = create_model(self.structure_map)
+        # Only run if the run flag is set
+        if not self.run:
+            return
         
+        # Initialize a new model and supporting label maps
+        if self.dc3 is None:
+            self.dc3 = create_model(self.structure_map)
+
+            # Defensively copy both label maps
+            self.label_to_number = dict(self.dc3.label_to_number)
+            self.number_to_label = dict(self.dc3.number_to_label)
+            
+            # Add amorphous and unknown
+            amorphous_num = max(self.number_to_label.keys()) + 1
+            unknown_num = amorphous_num + 1
+
+            self.label_to_number["amorphous"] = amorphous_num
+            self.label_to_number["unknown"] = unknown_num
+
+            self.number_to_label[amorphous_num] = "amorphous"
+            self.number_to_label[unknown_num] = "unknown"
+        
+        if isinstance(self.structure_map, dict):
+            assert "amorphous" not in self.structure_map and "unknown" not in self.structure_map, "Amorphous / unknown should not be name of any structures"
+        
+        # Calculations
         print("Calculating structure types")
         result = self.dc3.calculate(data)
 
-        # Convert
-        for i in range(len(result)):
-            if result[i] in self.dc3.label_str_to_int:
-                result[i] = self.dc3.label_str_to_int[result[i]]
-            elif result[i] == "amorphous":
-                result[i] = len(self.dc3.label_str_to_int)
-            elif (result[i] == "unknown"):
-                result[i] = len(self.dc3.label_str_to_int) + 1
-            else:
-                raise ValueError("Unknown reult")
-
-        data.particles_.create_property("Structure_Type", data=result)
+        # Set as Structure_Type
+        data.particles_.create_property("Structure_Type", data=[self.label_to_number[i] for i in result])
