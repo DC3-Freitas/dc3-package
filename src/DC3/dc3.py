@@ -14,6 +14,10 @@ from DC3.ml.train import train
 
 
 class DC3:
+    """
+    Full DC3 classification to determine the structure of each atom.
+    """
+
     def __init__(
         self,
         model: MLPModel,
@@ -28,7 +32,8 @@ class DC3:
             model: trained PyTorch MLPModel used for classification
             label_map: dictionary mapping structure names to integer class labels
             ref_vecs: dictionary mapping structure names to mean feature vectors
-            delta_cutoffs: dictionary mapping structure names to distance thresholds for outlier rejection
+            delta_cutoffs: dictionary mapping structure names to distance thresholds for
+                           outlier classification
         """
         # Model
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -44,9 +49,10 @@ class DC3:
         self.label_to_number = {k: v for k, v in label_map.items()}
         self.number_to_label = {v: k for k, v in label_map.items()}
 
-        amorphous_num = max(label_map.keys()) + 1
+        amorphous_num = max(label_map.values()) + 1
         unknown_num = amorphous_num + 1
 
+        # Note that the label map used in the dataset must not include these
         self.label_to_number["amorphous"] = amorphous_num
         self.label_to_number["unknown"] = unknown_num
 
@@ -95,7 +101,7 @@ class DC3:
 
     def save(self, model_name: str, file_dir: str) -> None:
         """
-        Saves the entire DC3 model and metadata to disk.
+        Saves the entire DC3 model and metadata.
         Includes the model weights and associated label map, reference vectors, and cutoffs.
 
         Args:
@@ -127,7 +133,8 @@ def create_model(structure_map: str | dict[str, str | None] | None) -> DC3:
     Args:
         structure_map: determines how the model is created.
 
-                       If it's a string then it must be a path to a full DC3 model which is then loaded
+                       If it's a string then it must be a path to a full DC3 model which
+                       is then loaded
 
                        If it's a dict then it will contain key value pairs in the form
                        {<structure name>, path to OVITO file of perfect lattice of structure | None}

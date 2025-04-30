@@ -8,13 +8,6 @@ class CrystalDataset(Dataset):
     """
     Dataset for crystal structure classification. Mean and stds are computed
     for reference but the dataset itself does not normalize.
-
-    Attributes:
-        features: array containing all feature vectors.
-        labels: array of shape containing all integer class labels.
-        label_map: mapping from structure name to corresponding integer class label.
-        means: per-feature means computed across the dataset.
-        stds: per-feature standard deviations computed across the dataset.
     """
 
     def __init__(

@@ -35,19 +35,19 @@ def coherence_single_atom(
     phis = np.arctan2(y_coords, x_coords)
 
     # 2) Calculate vectors
-    E_vec = np.zeros((np.sum(l_arr * 2 + 1)), dtype=np.complex128)
+    e_vec = np.zeros((np.sum(l_arr * 2 + 1)), dtype=np.complex128)
     index = 0
 
     for l in l_arr:
         all_sph_harmonics = calc_spherical_harmonics(l, thetas, phis, norm_factors)
-        E_vec[index : index + 2 * l + 1] += np.sum(all_sph_harmonics, axis=0) / len(
+        e_vec[index : index + 2 * l + 1] += np.sum(all_sph_harmonics, axis=0) / len(
             unit_vecs
         )
         index += 2 * l + 1
 
     # 3) Normalize
-    E_vec /= np.linalg.norm(E_vec)
-    return E_vec
+    e_vec /= np.linalg.norm(e_vec)
+    return e_vec
 
 
 def calculate_all_coherence_values(

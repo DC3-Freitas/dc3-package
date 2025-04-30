@@ -1,23 +1,24 @@
 from ovito.data import DataCollection
 from ovito.pipeline import ModifierInterface
 from DC3.dc3 import create_model
-from traits.api import *
+from traits.api import Any, Bool
+from collections.abc import Iterable
 
 
 class DC3Modifier(ModifierInterface):
     """
-    DC3Modifier is a custom modifier for the OVITO pipeline that uses the DC3 model to classify crystal structures.
-    It modifies the data collection in place based on the classification results.
+    DC3Modifier is a custom modifier for the OVITO pipeline that uses the
+    DC3 model to classify crystal structures. It modifies the data collection in
+    place based on the classification results.
     """
 
     structure_map = Any()
     run = Bool(False, help="Check to start DC3 classification")
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize the DC3Modifier with the model path and label mapping.
-
-        TODO
+        Accepts no arguments.
         """
         super().__init__()
 
@@ -26,7 +27,7 @@ class DC3Modifier(ModifierInterface):
         self.number_to_label = {}
         self.label_to_number = {}
 
-    def modify(self, data: DataCollection, frame: int, **kwargs):
+    def modify(self, data: DataCollection, frame: int, **kwargs) -> None:
         """
         Modify the data collection in place.
         This method is called for each frame of the pipeline.
@@ -39,7 +40,16 @@ class DC3Modifier(ModifierInterface):
         # Only run if the run flag is set
         if not self.run:
             return
-        
+
+        # Make sure structure map is valid
+        assert isinstance(self.structure_map, (dict, str, type(None)))
+
+        if isinstance(self.structure_map, dict):
+            assert (
+                "amorphous" not in self.structure_map
+                and "unknown" not in self.structure_map
+            ), "Amorphous / unknown should not be name of any structures"
+
         # Initialize a new model and supporting label maps
         if self.dc3 is None:
             self.dc3 = create_model(self.structure_map)
@@ -47,23 +57,25 @@ class DC3Modifier(ModifierInterface):
             # Defensively copy both label maps
             self.label_to_number = dict(self.dc3.label_to_number)
             self.number_to_label = dict(self.dc3.number_to_label)
-            
-            # Add amorphous and unknown
-            amorphous_num = max(self.number_to_label.keys()) + 1
-            unknown_num = amorphous_num + 1
 
-            self.label_to_number["amorphous"] = amorphous_num
-            self.label_to_number["unknown"] = unknown_num
-
-            self.number_to_label[amorphous_num] = "amorphous"
-            self.number_to_label[unknown_num] = "unknown"
-        
-        if isinstance(self.structure_map, dict):
-            assert "amorphous" not in self.structure_map and "unknown" not in self.structure_map, "Amorphous / unknown should not be name of any structures"
-        
         # Calculations
         print("Calculating structure types")
         result = self.dc3.calculate(data)
 
         # Set as Structure_Type
-        data.particles_.create_property("Structure_Type", data=[self.label_to_number[i] for i in result])
+        data.particles_.create_property(
+            "Structure_Type", data=[self.label_to_number[i] for i in result]
+        )
+
+    def save_full_model(self, model_name: str, file_dir: str) -> None:
+        """
+        Saves the entire DC3 model and metadata.
+
+        Must be called after the model is instanciated which occurs after
+        a call to modify.
+
+        Args:
+            model_name: filename prefix for the saved model
+            file_dir: directory to save the model into
+        """
+        self.dc3.save(model_name, file_dir)

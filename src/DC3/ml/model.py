@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-import torch.nn as nn
+from torch import nn
 import warnings
 
 
@@ -8,11 +8,6 @@ class MLPModel(nn.Module):
     """
     Multilayer perceptron (MLP) model for structural classification.
     Also handles input normalization interally (so does not expect normalized data).
-
-    Attributes:
-        means: tensor containing mean of each specific input feature
-        stds: tensor containing standard deviation of each specific input feature
-        network: architecture of model
     """
 
     def __init__(

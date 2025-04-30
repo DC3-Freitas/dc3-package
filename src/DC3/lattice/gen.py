@@ -6,10 +6,6 @@ from ovito.io import import_file, export_file
 class LatticeGenerator:
     """
     Utility for loading and peterbing crystal lattices for synthetic data generation.
-
-    Attributes:
-        lattice: Internal stored perfect lattice
-        nn_distance: Nearest neighbor distance in perfect lattice
     """
 
     def load_np(self, lattice: np.ndarray) -> None:
