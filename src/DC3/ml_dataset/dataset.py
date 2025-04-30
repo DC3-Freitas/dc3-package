@@ -1,20 +1,40 @@
-"""
-PyTorch Dataset for crystal structures
-"""
-
 from torch.utils.data import Dataset
 import numpy as np
 import json
 import os
 
+
 class CrystalDataset(Dataset):
-    def __init__(self, data: list[tuple[str, np.ndarray]], save_label_map_dir: None | str = None):
+    """
+    Dataset for crystal structure classification. Mean and stds are computed
+    for reference but the dataset itself does not normalize.
+
+    Attributes:
+        features: array containing all feature vectors.
+        labels: array of shape containing all integer class labels.
+        label_map: mapping from structure name to corresponding integer class label.
+        means: per-feature means computed across the dataset.
+        stds: per-feature standard deviations computed across the dataset.
+    """
+
+    def __init__(
+        self, data: list[tuple[str, np.ndarray]], save_label_map_dir: str | None = None
+    ) -> None:
+        """
+        Initializes the dataset from a list of (structure name, feature matrix) pairs.
+
+        Args:
+            data: list of structure names and associated feature arrays of shape
+            save_label_map_dir: if provided, saves the structure-to-label mapping to this directory as a JSON file.
+        """
         # Create label and label map
         self.labels = []
         self.label_map = {}
 
         for structure, features in data:
-            assert not np.any(np.isnan(features)), f"Found nan in features associated with {structure}"
+            assert not np.any(
+                np.isnan(features)
+            ), f"Found nan in features associated with {structure}"
 
             if structure not in self.label_map:
                 self.label_map[structure] = len(self.label_map)
@@ -39,7 +59,9 @@ class CrystalDataset(Dataset):
         )
 
     def __len__(self):
+        """Returns the number of feature vectors in the dataset."""
         return len(self.features)
 
     def __getitem__(self, idx):
+        """Returns the (feature, label) pair at the specified index."""
         return self.features[idx], self.labels[idx]
