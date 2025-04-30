@@ -20,6 +20,9 @@ from DC3.dc3 import create_model
 
 
 def gen_features_from_perfect_lattices():
+    """
+    Computes and saves features for all perfect lattices.
+    """
     os.makedirs(SAVED_PERFECT_FEAT_DIR, exist_ok=True)
 
     for f in os.listdir(SAVED_PERFECT_MD_DIR):
@@ -32,6 +35,10 @@ def gen_features_from_perfect_lattices():
 
 
 def gen_synthetic_features():
+    """
+    Generates synthetic data from perfect lattices and
+    saves their feature vectors under the appropriate folder.
+    """
     lattice_paths = []
     save_folders = []
 
@@ -45,6 +52,9 @@ def gen_synthetic_features():
 
 
 def calculate_label_map_and_train_model():
+    """
+    Builds the dataset, trains the model, and saves label map, stats, and model.
+    """
     # Create dataset
     data = []
     for structure in os.listdir(SAVED_SYNTH_FEAT_DIR):
@@ -59,6 +69,9 @@ def calculate_label_map_and_train_model():
 
 
 def calculate_outliers():
+    """
+    Computes and saves reference vectors and outlier cutoffs for each structure.
+    """
     # Get all data
     perfect_data = []
     synthetic_data = []
@@ -86,16 +99,26 @@ def calculate_outliers():
 
 
 def create_and_save_dc3():
+    """
+    Builds and saves the full DC3 model (computed from scratch) from structure map.
+    """
     # Note that the ml model here may be different than whatever model is currently saved
     structure_map = {}
     for f in os.listdir(SAVED_PERFECT_FEAT_DIR):
         # Expects form <structure_name>.npy
         structure_map[f[:-4]] = None
-    
+
     create_model(structure_map).save("dc3_full_model", SAVED_DIR)
 
 
 def main():
+    """
+    Runs the full DC3 model pipeline end-to-end twice for both
+    precalculation and testing.
+
+    Note that the model used in create_and_save_dc3 is different
+    than the one in calculate_label_map_and_train_model.
+    """
     gen_features_from_perfect_lattices()
     gen_synthetic_features()
     calculate_label_map_and_train_model()
