@@ -1,25 +1,34 @@
 import numpy as np
-import ovito
+from ovito.data import Particles, DataCollection, SimulationCell, NearestNeighborFinder
+from ovito.io import import_file, export_file
 
 
 class LatticeGenerator:
-    def load_np(self, lattice: np.ndarray):
+    """
+    Utility for loading and peterbing crystal lattices for synthetic data generation.
+
+    Attributes:
+        lattice: Internal stored perfect lattice
+        nn_distance: Nearest neighbor distance in perfect lattice
+    """
+
+    def load_np(self, lattice: np.ndarray) -> None:
         """
         Initialize a generator with a given lattice; use OVITO for analysis
 
         Args:
             lattice: a numpy array (n x 3) of perfect lattice positions
         """
-        self.lattice = ovito.data.DataCollection()
-        particles = ovito.data.Particles()
+        self.lattice = DataCollection()
+        particles = Particles()
         particles.create_property("Position", data=lattice)
         self.lattice.objects.append(particles)
-        cell = ovito.data.SimulationCell(pbc=(False, False, False))
+        cell = SimulationCell(pbc=(False, False, False))
         cell[...] = [[10, 0, 0, 0], [0, 10, 0, 0], [0, 0, 10, 0]]
         self.lattice.objects.append(cell)
         self.calculate_nn_distance()
 
-    def load_ovito(self, lattice: ovito.data.DataCollection):
+    def load_ovito(self, lattice: DataCollection) -> None:
         """
         Initialize a generator with a given lattice; use OVITO for analysis
 
@@ -29,28 +38,26 @@ class LatticeGenerator:
         self.lattice = lattice
         self.calculate_nn_distance()
 
-    def load_lammps(self, filename: str):
+    def load_lammps(self, filename: str) -> None:
         """
         Initialize a generator with a given lattice; use OVITO for analysis
 
         Args:
             filename: a string of the path to a LAMMPS data file
         """
-        pipeline = ovito.io.import_file(filename)
+        pipeline = import_file(filename)
         self.lattice = pipeline.compute()
         self.calculate_nn_distance()
 
-    def calculate_nn_distance(self):
+    def calculate_nn_distance(self) -> None:
         """
         Calculate the nearest neighbor distance of the initialized lattice using OVITO.
         Loads from internal lattice. NearestNeighborFinder is a generator which results
         in mildly strange syntax in this use case
         """
-        self.nn_distance = next(
-            ovito.data.NearestNeighborFinder(1, self.lattice).find(0)
-        ).distance
+        self.nn_distance = next(NearestNeighborFinder(1, self.lattice).find(0)).distance
 
-    def generate(self, alpha):
+    def generate(self, alpha: float) -> DataCollection:
         """
         Generate a synthetic sample of initialized lattice with a given thermal alpha.
 
@@ -83,7 +90,9 @@ class LatticeGenerator:
 
         return displaced_lattice
 
-    def generate_range(self, alpha_min, alpha_max, n):
+    def generate_range(
+        self, alpha_min: float, alpha_max: float, n: int
+    ) -> list[DataCollection]:
         """
         Generate a range of synthetic samples of initialized lattice with thermal alphas
         ranging from alpha_min to alpha_max.
@@ -99,11 +108,11 @@ class LatticeGenerator:
         alphas = np.linspace(alpha_min, alpha_max, n)
         return [self.generate(alpha) for alpha in alphas]
 
-    def save(self, path, displaced_lattice):
+    def save(self, path: str, displaced_lattice: DataCollection) -> None:
         """
         Save the generated samples to a LAMMPS data file. (Probably shouldn't be used in practice)
         """
-        ovito.io.export_file(
+        export_file(
             displaced_lattice,
             path,
             columns=[
