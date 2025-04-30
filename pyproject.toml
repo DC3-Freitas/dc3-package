@@ -26,10 +26,12 @@ dependencies = [
 repository = "https://github.com/DC3-Freitas/dc3-package"
 
 [tool.setuptools]
+# enable package discovery under src/
 packages = { find = {} }
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where   = ["src"]
+include = ["DC3*"]
 
 [tool.setuptools.package-data]
 "*" = ["*.*"]
