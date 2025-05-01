@@ -75,9 +75,9 @@ class DC3Modifier(ModifierInterface):
         print("\nCalculating structure types")
         result = self.dc3.calculate(data)
 
-        # Set as Structure_Type
+        # Set as structure_type
         data.particles_.create_property(
-            "Structure_Type", data=[self.label_to_number[i] for i in result]
+            "structure_type", data=[self.label_to_number[i] for i in result]
         )
 
     def save_full_model(self, model_name: str, file_dir: str) -> None:
