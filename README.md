@@ -33,7 +33,7 @@ modifier.save_full_model("name without .pth", "path to save directory")
 #### Loading
 ```py
 modifier = DC3Modifier()
-modifier.model_input = "path to saved model"
+modifier.model_input = "path to saved model" # To load from path, set model input to be the path
 ```
 #### Using
 ```py
@@ -45,7 +45,7 @@ pipeline = import_file("path to dump")
 pipeline.modifiers.append(modifier)
 
 data = pipeline.compute(0)
-print([modifier.number_to_label[i] for i in dat.particles["structure_type"].array])
+print([modifier.number_to_label[i] for i in data.particles["structure_type"].array])
 ```
 
 ## Installation
