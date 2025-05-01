@@ -104,4 +104,4 @@ class DC3Modifier(ModifierInterface):
         if self.dc3 is None:
             self.initialize_info_from_input()
 
-        create_model(self.model_input).save(model_name, file_dir)
+        self.dc3.save(model_name, file_dir)
