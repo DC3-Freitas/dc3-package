@@ -101,8 +101,8 @@ class DC3:
         Includes the model weights and associated label map, reference vectors, and cutoffs.
 
         Args:
-            model_name: filename prefix for the saved model
-            file_dir: directory to save the model into
+            model_name: filename prefix for the saved model (excluding .pth)
+            file_dir: directory to save the model into (absolute path when called from outside)
         """
         # Encode into tensor
         meta_json = json.dumps(
@@ -122,29 +122,29 @@ class DC3:
         )
 
 
-def create_model(structure_map: str | dict[str, str | None] | None) -> DC3:
+def create_model(model_input: str | dict[str, str | None] | None) -> DC3:
     """
     Creates a DC3 model from scratch or loads a saved model from disk.
 
     Args:
-        structure_map: determines how the model is created.
+        model_input: determines how the model is created.
 
-                       If it's a string then it must be a path to a full DC3 model which
-                       is then loaded
+                     If it's a string then it must be a path to a full DC3 model which
+                     is then loaded
 
-                       If it's a dict then it will contain key value pairs in the form
-                       {<structure name>, path to OVITO file of perfect lattice of structure | None}
+                     If it's a dict then it will contain key value pairs in the form
+                     {<structure name>, path to OVITO file of perfect lattice of structure | None}
 
-                       If the value is None then it defaults to the saved perfect lattices
-                       associated with <structure name> (currently there is only support for
-                       bcc, cd, fcc, hcp, hd, sc). Note that <structure_name> should never be
-                       amorphous or unknown.
+                     If the value is None then it defaults to the saved perfect lattices
+                     associated with <structure name> (currently there is only support for
+                     bcc, cd, fcc, hcp, hd, sc). Note that <structure_name> should never be
+                     amorphous or unknown.
     Returns:
         A DC3 instance ready for classification
     """
-    if isinstance(structure_map, dict):
+    if isinstance(model_input, dict):
         # Data
-        data_handler = DataHandler(structure_map)
+        data_handler = DataHandler(model_input)
         dataset = CrystalDataset(data_handler.get_synthetic_data())
 
         # Model
@@ -163,7 +163,7 @@ def create_model(structure_map: str | dict[str, str | None] | None) -> DC3:
         return DC3(model, dataset.label_map, ref_vecs, delta_cutoffs)
 
     else:
-        dc3_path = structure_map if structure_map is not None else SAVED_FULL_MODEL_PATH
+        dc3_path = model_input if model_input is not None else SAVED_FULL_MODEL_PATH
         assert os.path.isfile(dc3_path), f"DC3 model at {dc3_path} does not exist"
 
         # Load

@@ -15,7 +15,7 @@ class DC3Modifier(ModifierInterface):
     place based on the classification results.
     """
 
-    structure_map = Any()
+    model_input = Any()
     run = Bool(False, help="Check to start DC3 classification")
 
     def __init__(self) -> None:
@@ -44,18 +44,18 @@ class DC3Modifier(ModifierInterface):
         if not self.run:
             return
 
-        # Make sure structure map is valid
-        assert isinstance(self.structure_map, (dict, str, type(None)))
+        # Make sure model input is valid
+        assert isinstance(self.model_input, (dict, str, type(None)))
 
-        if isinstance(self.structure_map, dict):
+        if isinstance(self.model_input, dict):
             assert (
-                "amorphous" not in self.structure_map
-                and "unknown" not in self.structure_map
+                "amorphous" not in self.model_input
+                and "unknown" not in self.model_input
             ), "Amorphous / unknown should not be name of any structures"
 
         # Initialize a new model and supporting label maps
         if self.dc3 is None:
-            self.dc3 = create_model(self.structure_map)
+            self.dc3 = create_model(self.model_input)
 
             # Defensively copy both label maps
             self.label_to_number = dict(self.dc3.label_to_number)
@@ -88,7 +88,7 @@ class DC3Modifier(ModifierInterface):
         a call to modify.
 
         Args:
-            model_name: filename prefix for the saved model
-            file_dir: directory to save the model into
+            model_name: filename prefix for the saved model (excluding .pth)
+            file_dir: directory to save the model into (absolute path when called from outside)
         """
         self.dc3.save(model_name, file_dir)
