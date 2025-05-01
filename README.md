@@ -22,7 +22,7 @@ Note that the result is coded by an integer and can be mapped to a string with t
 |-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
 | `save_full_model()`   | Saves the full DC3 model (entier model including neural network weights) to the specified location. This can only be called from within a Python script and is not available through the OVITO GUI.<br><br>Model is created based on the current value of `model_input`. | - `model_name` (`str`): filename prefix for the saved model (excluding the `.pth` extension).<br><br>- `file_dir` (`str`): path to the directory where the model should be saved.                                        | `None`      |
 
-## Example
+## Examples
 
 #### Saving
 ```py
