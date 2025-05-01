@@ -33,7 +33,7 @@ modifier.save_full_model("name without .pth", "path to save directory")
 #### Loading
 ```py
 modifier = DC3Modifier()
-modifier.model_input = "path to saved model" # To load from path, set model input to be the path
+modifier.model_input = "path to saved model" # To use model from path, set model_input to be the path
 ```
 #### Using
 ```py
