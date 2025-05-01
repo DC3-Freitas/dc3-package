@@ -107,7 +107,7 @@ def calculate_amorphous(data: DataCollection) -> np.ndarray:
     Args:
         data: OVITO DataCollection containing information about atoms
     Returns:
-        A boolean array indicating whether each atom is amorphous 
+        A boolean array indicating whether each atom is amorphous
         (1 means amorphous, 0 means not amorphous)
     """
     return (

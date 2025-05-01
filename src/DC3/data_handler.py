@@ -42,7 +42,7 @@ class DataHandler:
 
                 to_gen_paths.append(path)
                 to_gen_structures.append(structure)
-            
+
             # Path not specified: use existing
             else:
                 structure_perfect_dir = os.path.join(

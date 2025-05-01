@@ -36,6 +36,8 @@ class DC3:
         Args:
             model: trained PyTorch MLPModel used for classification
             label_map: dictionary mapping structure names to integer class labels
+                       (does not include unknown and amorphous -- those will be added
+                        during initialization)
             ref_vecs: dictionary mapping structure names to mean feature vectors
             delta_cutoffs: dictionary mapping structure names to distance thresholds for
                            outlier classification
@@ -187,4 +189,5 @@ def create_model(structure_map: str | dict[str, str | None] | None) -> DC3:
         model = MLPModel(classes=len(metadata["label_map"]))
         model.load_state_dict(dc3_loaded["state_dict"], strict=True)
 
+        # Note that the label map passed in is exclusive of unknown and amorphous
         return DC3(model, metadata["label_map"], ref_vecs, metadata["delta_cutoffs"])
