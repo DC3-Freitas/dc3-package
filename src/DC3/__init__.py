@@ -72,7 +72,7 @@ class DC3Modifier(ModifierInterface):
             self.number_to_label[unknown_num] = "unknown"
 
         # Calculations
-        print("Calculating structure types")
+        print("\nCalculating structure types")
         result = self.dc3.calculate(data)
 
         # Set as Structure_Type
