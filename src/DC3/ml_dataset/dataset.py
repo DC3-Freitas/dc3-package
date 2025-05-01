@@ -56,10 +56,10 @@ class CrystalDataset(Dataset):
             f"\nLoaded dataset with {len(self.label_map)} classes and {len(self.features)} samples"
         )
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Returns the number of feature vectors in the dataset."""
         return len(self.features)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> tuple[np.ndarray, int]:
         """Returns the (feature, label) pair at the specified index."""
         return self.features[idx], self.labels[idx]

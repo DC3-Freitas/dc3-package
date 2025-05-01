@@ -10,8 +10,8 @@ from DC3.constants import TEMPS
 
 
 def create(
-    lattice_path: str, alpha: float, structure: str | None, save_dir: list[str] | None
-) -> tuple[str, np.ndarray]:
+    lattice_path: str, alpha: float, structure: str | None, save_dir: str | None
+) -> tuple[str | None, np.ndarray]:
     """
     Creates single synthetic data based on perfect lattice.
     If path is provided, also saves a file containing the data.
@@ -42,7 +42,7 @@ def generate_from_perfect_lattices(
     lattice_paths: list[str],
     structures: list[str] | None,
     save_dirs: list[str] | None = None,
-) -> list[np.ndarray]:
+) -> list[tuple[str | None, np.ndarray]]:
     """
     Generates synthetic features for a set of lattices across multiple alphas.
 

@@ -18,8 +18,8 @@ class MLPModel(nn.Module):
     def __init__(
         self,
         classes: int,
-        means: np.ndarray | None = None,
-        stds: np.ndarray | None = None,
+        means: np.ndarray | torch.Tensor | None = None,
+        stds: np.ndarray | torch.Tensor | None = None,
     ) -> None:
         """
         Initialize the MLP model.

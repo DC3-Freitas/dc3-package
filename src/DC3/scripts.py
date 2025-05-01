@@ -24,7 +24,7 @@ from DC3.ml_dataset.process_lattices import generate_from_perfect_lattices
 from DC3.outlier.outlier_cutoffs import compute_ref_vec, compute_delta_cutoff
 
 
-def gen_features_from_perfect_lattices():
+def gen_features_from_perfect_lattices() -> None:
     """
     Computes and saves features for all perfect lattices.
     """
@@ -39,7 +39,7 @@ def gen_features_from_perfect_lattices():
         )
 
 
-def gen_synthetic_features():
+def gen_synthetic_features() -> None:
     """
     Generates synthetic data from perfect lattices and
     saves their feature vectors under the appropriate folder.
@@ -56,7 +56,7 @@ def gen_synthetic_features():
     generate_from_perfect_lattices(lattice_paths, None, save_folders)
 
 
-def calculate_label_map_and_train_model():
+def calculate_label_map_and_train_model() -> None:
     """
     Builds the dataset, trains the model, and saves label map, stats, and model.
     """
@@ -73,7 +73,7 @@ def calculate_label_map_and_train_model():
     train(model, dataset, "pretrained_model", SAVED_ML_MODELS_DIR, SAVED_ML_STATS_DIR)
 
 
-def calculate_outliers():
+def calculate_outliers() -> None:
     """
     Computes and saves reference vectors and outlier cutoffs for each structure.
     """
@@ -103,7 +103,7 @@ def calculate_outliers():
     )
 
 
-def create_and_save_dc3():
+def create_and_save_dc3() -> None:
     """
     Builds and saves the full DC3 model (computed from scratch) from structure map.
     """
@@ -116,7 +116,7 @@ def create_and_save_dc3():
     create_model(structure_map).save("dc3_full_model", SAVED_DIR)
 
 
-def main():
+def main() -> None:
     """
     Runs the full DC3 model pipeline end-to-end twice for both
     precalculation and testing.
