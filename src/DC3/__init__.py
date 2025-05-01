@@ -61,6 +61,16 @@ class DC3Modifier(ModifierInterface):
             self.label_to_number = dict(self.dc3.label_to_number)
             self.number_to_label = dict(self.dc3.number_to_label)
 
+            # Note that the label map used in dc3 and dataset must not include amorphous and unknown
+            amorphous_num = max(self.label_to_number.values()) + 1
+            unknown_num = amorphous_num + 1
+
+            self.label_to_number["amorphous"] = amorphous_num
+            self.label_to_number["unknown"] = unknown_num
+
+            self.number_to_label[amorphous_num] = "amorphous"
+            self.number_to_label[unknown_num] = "unknown"
+
         # Calculations
         print("Calculating structure types")
         result = self.dc3.calculate(data)

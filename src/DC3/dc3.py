@@ -36,8 +36,7 @@ class DC3:
         Args:
             model: trained PyTorch MLPModel used for classification
             label_map: dictionary mapping structure names to integer class labels
-                       (does not include unknown and amorphous -- those will be added
-                        during initialization)
+                       (does not include unknown and amorphous)
             ref_vecs: dictionary mapping structure names to mean feature vectors
             delta_cutoffs: dictionary mapping structure names to distance thresholds for
                            outlier classification
@@ -52,19 +51,9 @@ class DC3:
         self.means = self.model.means.cpu().detach().numpy()
         self.stds = self.model.stds.cpu().detach().numpy()
 
-        # Mapping (include outlier)
+        # Mapping (don't include outlier)
         self.label_to_number = {k: v for k, v in label_map.items()}
         self.number_to_label = {v: k for k, v in label_map.items()}
-
-        amorphous_num = max(label_map.values()) + 1
-        unknown_num = amorphous_num + 1
-
-        # Note that the label map used in the dataset must not include these
-        self.label_to_number["amorphous"] = amorphous_num
-        self.label_to_number["unknown"] = unknown_num
-
-        self.number_to_label[amorphous_num] = "amorphous"
-        self.number_to_label[unknown_num] = "unknown"
 
         # Reference vectors and delta cutoffs
         self.ref_vecs = ref_vecs
