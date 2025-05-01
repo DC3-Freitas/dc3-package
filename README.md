@@ -59,7 +59,7 @@ print([modifier.number_to_label[i] for i in dat.particles["structure_type"].arra
   pip install https://github.com/DC3-Freitas/dc3-package/archive/refs/heads/main.zip
   ```
 
-## Technical information / dependencies
+## Technical Information
 - Tested on OVITO version 3.12.2
 
 ## Contact
