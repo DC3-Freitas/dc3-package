@@ -27,13 +27,13 @@ Note that the result is coded by an integer and can be mapped to a string with t
 #### Saving
 ```py
 modifier = DC3Modifier()
-modifier.model_input = {"fcc": "<path to fcc perfect lattice>", "bcc": None, "hcp": None, "cd": None}
-modifier.save_full_model("<name without .pth>", "<path to save directory>")
+modifier.model_input = {"fcc": "path to fcc perfect lattice", "bcc": None, "hcp": None, "cd": None}
+modifier.save_full_model("name without .pth", "path to save directory")
 ```
 #### Loading
 ```py
 modifier = DC3Modifier()
-modifier.model_input = "<path to saved model>"
+modifier.model_input = "path to saved model"
 ```
 #### Using
 ```py
@@ -41,7 +41,7 @@ modifier = DC3Modifier()
 modifier.run = True          # Must set run to be true if modifier will be used to compute
 modifier.model_input = None  # None makes it use the default pretrained model
 
-pipeline = import_file("<path to dump>")
+pipeline = import_file("path to dump")
 pipeline.modifiers.append(modifier)
 
 data = pipeline.compute(0)
