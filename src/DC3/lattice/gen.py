@@ -111,13 +111,19 @@ class LatticeGenerator:
         alphas = np.linspace(alpha_min, alpha_max, n)
         return [self.generate(alpha) for alpha in alphas]
 
-    def save(self, path: str, displaced_lattice: DataCollection) -> None:
+    def save(self, path: str, format: str, displaced_lattice: DataCollection) -> None:
         """
-        Save the generated samples to a LAMMPS data file. (Probably shouldn't be used in practice)
+        Save the generated samples to a LAMMPS data file.
+
+        Args:
+            path: path to destination including name
+            format: format of save (e.g. lammps/dump)
+            displaced_lattice: data collection to save
         """
         export_file(
             displaced_lattice,
             path,
+            format,
             columns=[
                 "Particle Identifier",
                 "Particle Type",
